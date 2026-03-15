@@ -1,0 +1,83 @@
+---
+title: "openspec archive"
+description: "Archive a completed change and merge delta specs"
+---
+
+Archives a completed change by merging its delta specs into the main `openspec/specs/` directory and moving the change folder to the archive. This is the final step in a change's lifecycle.
+
+## Syntax
+
+```bash
+openspec archive [change-name] [options]
+```
+
+## Arguments
+
+<ParamField path="change-name" type="string">
+  The change to archive. If omitted, prompts interactively.
+</ParamField>
+
+## Options
+
+<ParamField path="-y, --yes" type="boolean">
+  Skip confirmation prompts.
+</ParamField>
+
+<ParamField path="--skip-specs" type="boolean">
+  Skip spec merge operations. Use this for infrastructure, tooling, or documentation-only changes that do not affect `openspec/specs/`.
+</ParamField>
+
+<ParamField path="--no-validate" type="boolean">
+  Skip validation before archiving. Requires additional confirmation.
+</ParamField>
+
+## What it does
+
+<Steps>
+  <Step title="Validate">
+    Validates the change for structural issues (unless `--no-validate` is passed).
+  </Step>
+  <Step title="Confirm">
+    Prompts for confirmation (unless `--yes` is passed).
+  </Step>
+  <Step title="Merge specs">
+    Merges delta specs from the change into `openspec/specs/` (unless `--skip-specs` is passed).
+  </Step>
+  <Step title="Move to archive">
+    Moves the change folder to `openspec/changes/archive/YYYY-MM-DD-<name>/`.
+  </Step>
+</Steps>
+
+## Examples
+
+<Tabs>
+  <Tab title="Human">
+    ```bash
+    # Interactive archive (prompts for change name and confirmation)
+    openspec archive
+
+    # Archive a specific change with confirmation prompt
+    openspec archive add-dark-mode
+
+    # Archive a tooling change that doesn't touch specs
+    openspec archive update-ci-config --skip-specs
+    ```
+  </Tab>
+  <Tab title="CI / scripts">
+    ```bash
+    # Archive without any prompts (CI usage)
+    openspec archive add-dark-mode --yes
+
+    # Skip both prompts and spec merge for infrastructure changes
+    openspec archive deploy-config --yes --skip-specs
+    ```
+  </Tab>
+</Tabs>
+
+<Warning>
+  `--no-validate` bypasses structural checks. Only use it when you are certain the change is complete and valid.
+</Warning>
+
+<Tip>
+  Use `--skip-specs` for changes that only affect CI configuration, tooling scripts, or documentation — these changes don't produce spec deltas, so the merge step is unnecessary.
+</Tip>

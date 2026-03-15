@@ -1,0 +1,178 @@
+---
+title: "Specs"
+description: "Specifications are the source of truth describing how your system currently behaves"
+---
+
+Specs live in `openspec/specs/` and describe your system's observable behavior using structured requirements and scenarios. They are the foundation everything else in OpenSpec builds on.
+
+## What a spec is (and is not)
+
+A spec is a **behavior contract**, not an implementation plan.
+
+<Tabs>
+  <Tab title="What belongs in specs">
+    - Observable behavior users or downstream systems rely on
+    - Inputs, outputs, and error conditions
+    - External constraints (security, privacy, reliability, compatibility)
+    - Scenarios that can be tested or explicitly validated
+  </Tab>
+  <Tab title="What does not belong in specs">
+    - Internal class or function names
+    - Library or framework choices
+    - Step-by-step implementation details
+    - Detailed execution plans (those belong in `design.md` or `tasks.md`)
+  </Tab>
+</Tabs>
+
+<Tip>
+  Quick test: if implementation can change without changing externally visible behavior, it likely does not belong in the spec.
+</Tip>
+
+## Directory structure
+
+Specs are organized by domain under `openspec/specs/`:
+
+```text
+openspec/specs/
+├── auth/
+│   └── spec.md           # Authentication behavior
+├── payments/
+│   └── spec.md           # Payment processing
+├── notifications/
+│   └── spec.md           # Notification system
+└── ui/
+    └── spec.md           # UI behavior and themes
+```
+
+Organize specs by logical groupings that make sense for your system. Common patterns:
+
+- **By feature area**: `auth/`, `payments/`, `search/`
+- **By component**: `api/`, `frontend/`, `workers/`
+- **By bounded context**: `ordering/`, `fulfillment/`, `inventory/`
+
+## Spec format
+
+A spec contains requirements, and each requirement has scenarios:
+
+```markdown
+# Auth Specification
+
+## Purpose
+Authentication and session management for the application.
+
+## Requirements
+
+### Requirement: User Authentication
+The system SHALL issue a JWT token upon successful login.
+
+#### Scenario: Valid credentials
+- GIVEN a user with valid credentials
+- WHEN the user submits login form
+- THEN a JWT token is returned
+- AND the user is redirected to dashboard
+
+#### Scenario: Invalid credentials
+- GIVEN invalid credentials
+- WHEN the user submits login form
+- THEN an error message is displayed
+- AND no token is issued
+
+### Requirement: Session Expiration
+The system MUST expire sessions after 30 minutes of inactivity.
+
+#### Scenario: Idle timeout
+- GIVEN an authenticated session
+- WHEN 30 minutes pass without activity
+- THEN the session is invalidated
+- AND the user must re-authenticate
+```
+
+**Key elements:**
+
+| Element | Purpose |
+|---|---|
+| `## Purpose` | High-level description of this spec's domain |
+| `### Requirement:` | A specific behavior the system must have |
+| `#### Scenario:` | A concrete example of the requirement in action |
+| SHALL / MUST / SHOULD | RFC 2119 keywords indicating requirement strength |
+
+<Note>
+  Scenarios must use exactly four hashtags (`####`). Using three hashtags or plain bullets causes silent failures during validation.
+</Note>
+
+## Why structure specs this way
+
+**Requirements are the "what"** — they state what the system should do without specifying implementation.
+
+**Scenarios are the "when"** — they provide concrete examples that can be verified. Good scenarios:
+- Are testable (you could write an automated test for each one)
+- Cover both happy path and edge cases
+- Use Given/When/Then or a similar structured format
+
+## RFC 2119 keywords
+
+OpenSpec enforces RFC 2119 language for requirement strength. Every requirement text must contain `SHALL` or `MUST`.
+
+| Keyword | Meaning |
+|---|---|
+| **MUST** / **SHALL** | Absolute requirement — no exceptions |
+| **SHOULD** | Recommended, but valid exceptions exist |
+| **MAY** | Optional feature or behavior |
+
+<Info>
+  The validator rejects requirements that don't contain `SHALL` or `MUST`. This keeps requirements unambiguous and consistently enforceable.
+</Info>
+
+## Progressive rigor
+
+OpenSpec avoids bureaucracy. Use the lightest level of detail that still makes the change verifiable.
+
+<Tabs>
+  <Tab title="Lite spec (default)">
+    Use for most changes:
+
+    - Short behavior-first requirements
+    - Clear scope and non-goals
+    - A few concrete acceptance checks
+
+    Most changes should stay at this level.
+  </Tab>
+  <Tab title="Full spec (higher risk)">
+    Use when ambiguity is expensive:
+
+    - Cross-team or cross-repo changes
+    - API or contract changes
+    - Migrations, security, or privacy concerns
+    - Changes where rework from misunderstanding would be costly
+  </Tab>
+</Tabs>
+
+## Human + agent collaboration
+
+In many teams, humans explore and agents draft artifacts. The intended loop is:
+
+<Steps>
+  <Step title="Human provides intent, context, and constraints">
+    Describe what you want to change and why. Include any constraints, edge cases you already know about, or related systems that might be affected.
+  </Step>
+  <Step title="Agent converts this into behavior-first requirements and scenarios">
+    The agent drafts requirements using MUST/SHALL language and writes concrete scenarios for each requirement.
+  </Step>
+  <Step title="Agent keeps implementation detail out of the spec">
+    Technical decisions go into `design.md`. Execution steps go into `tasks.md`. The spec stays focused on observable behavior.
+  </Step>
+  <Step title="Validation confirms structure and clarity">
+    OpenSpec validates that each requirement has scenarios, uses normative language, and follows the correct heading structure before implementation begins.
+  </Step>
+</Steps>
+
+This keeps specs readable for humans and consistent for agents.
+
+<CardGroup cols={2}>
+  <Card title="Changes" icon="folder-open" href="/concepts/changes">
+    How specs evolve through the change and archive process.
+  </Card>
+  <Card title="Artifacts" icon="layer-group" href="/concepts/artifacts">
+    The documents inside a change, including delta specs.
+  </Card>
+</CardGroup>

@@ -1,0 +1,188 @@
+---
+title: "openspec validate"
+description: "Validate changes and specs for structural issues"
+---
+
+Validates changes and specs for structural issues. Can validate a single item, all changes, all specs, or everything at once. Supports parallel validation for bulk operations.
+
+## Syntax
+
+```bash
+openspec validate [item-name] [options]
+```
+
+## Arguments
+
+<ParamField path="item-name" type="string">
+  Name of the specific change or spec to validate. If omitted, prompts interactively (or use `--all`, `--changes`, or `--specs` for bulk validation).
+</ParamField>
+
+## Options
+
+<ParamField path="--all" type="boolean">
+  Validate all changes and specs.
+</ParamField>
+
+<ParamField path="--changes" type="boolean">
+  Validate all changes.
+</ParamField>
+
+<ParamField path="--specs" type="boolean">
+  Validate all specs.
+</ParamField>
+
+<ParamField path="--type" type="string">
+  Specify item type when the name is ambiguous. Accepts `change` or `spec`.
+</ParamField>
+
+<ParamField path="--strict" type="boolean">
+  Enable strict validation mode.
+</ParamField>
+
+<ParamField path="--json" type="boolean">
+  Output results as JSON.
+</ParamField>
+
+<ParamField path="--concurrency" type="number" default="6">
+  Maximum number of parallel validations. Defaults to `6`, or the value of the `OPENSPEC_CONCURRENCY` environment variable.
+</ParamField>
+
+<ParamField path="--no-interactive" type="boolean">
+  Disable interactive prompts.
+</ParamField>
+
+## Examples
+
+<Tabs>
+  <Tab title="Human">
+    ```bash
+    # Interactive validation (prompts to pick an item)
+    openspec validate
+
+    # Validate a specific change
+    openspec validate add-dark-mode
+
+    # Validate all changes
+    openspec validate --changes
+
+    # Validate all specs in strict mode
+    openspec validate --specs --strict
+    ```
+
+    **Output (text):**
+
+    ```
+    Validating add-dark-mode...
+      ✓ proposal.md valid
+      ✓ specs/ui/spec.md valid
+      ⚠ design.md: missing "Technical Approach" section
+
+    1 warning found
+    ```
+  </Tab>
+  <Tab title="CI / scripts">
+    ```bash
+    # Validate everything — ideal for CI
+    openspec validate --all --json
+
+    # Strict validation with increased parallelism
+    openspec validate --all --strict --concurrency 12
+
+    # Disable prompts in non-interactive environments
+    openspec validate --all --no-interactive
+    ```
+
+    **Output (JSON):**
+
+    ```json
+    {
+      "version": "1.0",
+      "items": [
+        {
+          "id": "add-dark-mode",
+          "type": "change",
+          "valid": true,
+          "issues": [
+            {
+              "level": "WARNING",
+              "path": "design.md",
+              "message": "missing 'Technical Approach' section"
+            }
+          ],
+          "durationMs": 42
+        }
+      ],
+      "summary": {
+        "totals": {
+          "items": 1,
+          "passed": 1,
+          "failed": 0
+        },
+        "byType": {
+          "change": { "items": 1, "passed": 1, "failed": 0 }
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## JSON output fields
+
+<ResponseField name="version" type="string" required>
+  Schema version of the JSON output format.
+</ResponseField>
+
+<ResponseField name="items" type="array" required>
+  Validation results for each item.
+  <Expandable title="item properties">
+    <ResponseField name="id" type="string">
+      Change or spec identifier.
+    </ResponseField>
+    <ResponseField name="type" type="string">
+      Item type: `change` or `spec`.
+    </ResponseField>
+    <ResponseField name="valid" type="boolean">
+      Whether the item passed validation.
+    </ResponseField>
+    <ResponseField name="issues" type="array">
+      List of issues found.
+      <Expandable title="issue properties">
+        <ResponseField name="level" type="string">
+          Severity: `ERROR`, `WARNING`, or `INFO`.
+        </ResponseField>
+        <ResponseField name="path" type="string">
+          File path or field where the issue was found.
+        </ResponseField>
+        <ResponseField name="message" type="string">
+          Human-readable description of the issue.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="durationMs" type="number">
+      Time taken to validate the item in milliseconds.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="summary" type="object" required>
+  Aggregate totals across all validated items.
+  <Expandable title="properties">
+    <ResponseField name="totals" type="object">
+      Overall counts: `items`, `passed`, `failed`.
+    </ResponseField>
+    <ResponseField name="byType" type="object">
+      Counts broken down by `change` and/or `spec`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Environment variables
+
+| Variable | Description |
+|----------|-------------|
+| `OPENSPEC_CONCURRENCY` | Sets the default max concurrent validations. Overridden by `--concurrency`. |
+
+<Tip>
+  Use `openspec validate --all --json --no-interactive` in CI pipelines. The command exits with code `1` if any item fails validation, making it suitable as a pipeline gate.
+</Tip>

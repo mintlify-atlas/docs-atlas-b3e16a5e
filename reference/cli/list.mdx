@@ -1,0 +1,109 @@
+---
+title: "openspec list"
+description: "List changes or specs in your project"
+---
+
+Lists active changes or specs in your project. Defaults to listing changes.
+
+## Syntax
+
+```bash
+openspec list [options]
+```
+
+## Options
+
+<ParamField path="--specs" type="boolean">
+  List specs instead of changes.
+</ParamField>
+
+<ParamField path="--changes" type="boolean">
+  List changes explicitly. This is the default behavior.
+</ParamField>
+
+<ParamField path="--sort" type="string" default="recent">
+  Sort order. Accepts `recent` (default) or `name`.
+</ParamField>
+
+<ParamField path="--json" type="boolean">
+  Output as JSON for programmatic use.
+</ParamField>
+
+## Examples
+
+<Tabs>
+  <Tab title="Human">
+    ```bash
+    # List all active changes
+    openspec list
+
+    # List all specs
+    openspec list --specs
+
+    # List changes sorted by name
+    openspec list --sort name
+    ```
+
+    **Output (changes):**
+
+    ```
+    Active changes:
+      add-dark-mode     UI theme switching support
+      fix-login-bug     Session timeout handling
+    ```
+  </Tab>
+  <Tab title="Agent / script">
+    ```bash
+    # JSON output for scripts or agents
+    openspec list --json
+
+    # JSON list of specs
+    openspec list --specs --json
+    ```
+
+    **Output (JSON):**
+
+    ```json
+    [
+      {
+        "id": "add-dark-mode",
+        "title": "UI theme switching support",
+        "deltaCount": 3,
+        "taskStatus": { "total": 8, "completed": 2 }
+      },
+      {
+        "id": "fix-login-bug",
+        "title": "Session timeout handling",
+        "deltaCount": 1,
+        "taskStatus": { "total": 4, "completed": 4 }
+      }
+    ]
+    ```
+  </Tab>
+</Tabs>
+
+## JSON output fields
+
+<ResponseField name="id" type="string" required>
+  Change or spec identifier (directory name).
+</ResponseField>
+
+<ResponseField name="title" type="string" required>
+  Title extracted from the item's proposal or spec file.
+</ResponseField>
+
+<ResponseField name="deltaCount" type="number">
+  Number of spec deltas in a change (changes only).
+</ResponseField>
+
+<ResponseField name="taskStatus" type="object">
+  Task completion counts (changes only).
+  <Expandable title="properties">
+    <ResponseField name="total" type="number">
+      Total number of tasks.
+    </ResponseField>
+    <ResponseField name="completed" type="number">
+      Number of completed tasks.
+    </ResponseField>
+  </Expandable>
+</ResponseField>

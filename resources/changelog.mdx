@@ -1,0 +1,136 @@
+---
+title: "Changelog"
+description: "OpenSpec version history and release notes"
+---
+
+Full release history is available on [GitHub](https://github.com/Fission-AI/OpenSpec/releases).
+
+## 1.2.0
+
+### Added
+
+- **Profile system** — Choose between `core` (4 essential workflows) and `custom` (pick any subset) profiles to control which skills get installed. Manage profiles with the new `openspec config profile` command.
+- **Propose workflow** — New one-step workflow creates a complete change proposal with design, specs, and tasks from a single request. No need to run `new` then `ff` separately.
+- **AI tool auto-detection** — `openspec init` now scans your project for existing tool directories (`.claude/`, `.cursor/`, etc.) and pre-selects detected tools.
+- **Pi support** — Pi (pi.dev) coding agent is now a supported tool with prompt and skill generation.
+- **Kiro support** — AWS Kiro IDE is now a supported tool with prompt and skill generation.
+
+### Changed
+
+- **Sync prunes deselected workflows** — `openspec update` now removes command files and skill directories for workflows you've deselected, keeping your project clean.
+- **Config drift warning** — `openspec config list` warns when global config is out of sync with the current project.
+
+### Fixed
+
+- Fixed onboard preflight giving a false "not initialized" error on freshly initialized projects.
+- Fixed archive workflow stopping mid-way when syncing — it now properly resumes after sync completes.
+- Added Windows PowerShell alternatives for onboard shell commands.
+
+## 1.1.1
+
+### Fixed
+
+- **OpenCode command references** — Command references in generated files now use the correct `/opsx-` hyphen format instead of `/opsx:` colon format, ensuring commands work properly in OpenCode.
+
+## 1.1.0
+
+### Fixed
+
+- **Codex global path support** — Codex adapter now resolves global paths correctly, fixing workflow file generation when run outside the project directory.
+- **Archive on cross-device or restricted paths** — Archive now falls back to copy+remove when rename fails with `EPERM` or `EXDEV` errors, fixing failures on networked and external drives.
+- **Slash command hints in workflow messages** — Workflow completion messages now display helpful slash command hints for next steps.
+- **Windsurf workflow file path** — Updated Windsurf adapter to use the correct `workflows/` directory instead of the legacy `commands/` path.
+
+### Changed
+
+- **Nix flake maintenance** — Version now read dynamically from `package.json`, reducing manual sync issues.
+- **Nix build optimization** — Source filtering excludes `node_modules` and artifacts, improving build times.
+
+## 1.0.2
+
+### Fixed
+
+- Clarified spec naming convention — specs should be named after capabilities (`specs/<capability>/spec.md`), not after changes.
+- Fixed task checkbox format guidance — tasks now clearly require `- [ ]` checkbox format for apply phase tracking.
+
+## 1.0.1
+
+### Fixed
+
+- Fixed incorrect archive path in onboarding documentation — the template now shows the correct path `openspec/changes/archive/YYYY-MM-DD-<name>/`.
+
+## 1.0.0 — The OPSX release
+
+The workflow has been rebuilt from the ground up. OPSX replaces the old phase-locked `/openspec:*` commands with an action-based system where AI understands what artifacts exist, what's ready to create, and what each action unlocks.
+
+### Breaking changes
+
+- **Old commands removed** — `/openspec:proposal`, `/openspec:apply`, and `/openspec:archive` no longer exist.
+- **Config files removed** — Tool-specific instruction files (`CLAUDE.md`, `.cursorrules`, `AGENTS.md`, `project.md`) are no longer generated.
+- **Migration required** — Run `openspec init` to upgrade. Legacy artifacts are detected and cleaned up with confirmation. See the [migration guide](/resources/migration).
+
+### Added
+
+- **Action-based workflow** — OPSX replaces linear phases with fluid actions. Edit any artifact anytime. The artifact graph tracks state automatically.
+- **Dynamic instructions** — Instructions are assembled from three layers: project context from `config.yaml`, per-artifact rules, and artifact templates. AI queries the CLI for real-time state.
+- **Semantic spec syncing** — Delta specs use semantic markers (`## ADDED`, `## MODIFIED`, `## REMOVED`, `## RENAMED`) that AI understands at the requirement level.
+- **Skills system** — Single `.claude/skills/` directory (or equivalent) replaces 8+ config files and scattered slash commands across 21 tool-specific locations.
+- **21 AI tools supported** — Claude Code, Cursor, Windsurf, Continue, Gemini CLI, GitHub Copilot, Amazon Q, Cline, RooCode, Kilo Code, Auggie, CodeBuddy, Qoder, Qwen, CoStrict, Crush, Factory, OpenCode, Antigravity, iFlow, and Codex.
+- **`/opsx:onboard`** — Guided 15-minute walkthrough of the complete workflow using your actual codebase.
+- **Customizable schemas** — Define custom artifact workflows in `openspec/schemas/`.
+- **Interactive setup** — `openspec init` shows animated welcome screen and searchable multi-select for choosing tools.
+
+### Fixed
+
+- Fixed Claude Code YAML parsing failure when command names contained colons.
+- Fixed task file parsing to handle trailing whitespace on checkbox lines.
+- Fixed JSON instruction output to separate context/rules from template.
+
+## 0.23.0
+
+### Added
+
+- **Bulk archive skill** — Archive multiple completed changes in a single operation with `/opsx:bulk-archive`. Includes batch validation, spec conflict detection, and consolidated confirmation.
+
+### Changed
+
+- Config creation now uses sensible defaults with helpful comments instead of interactive prompts.
+
+## 0.22.0
+
+### Added
+
+- **Project-level configuration** — Configure OpenSpec behavior per-project via `openspec/config.yaml`, including custom rules injection, context files, and schema resolution settings.
+- **Project-local schemas** — Define custom artifact schemas within your project's `openspec/schemas/` directory.
+- **Schema management commands** — New `openspec schema` subcommands: `list`, `show`, `export`, `validate`.
+
+### Fixed
+
+- Fixed config loading to handle null `rules` field in project configuration.
+
+## 0.21.0
+
+### Added
+
+- **Feedback command** — Submit feedback directly from the CLI with `openspec feedback`.
+- **Nix flake support** — Install and develop OpenSpec using Nix.
+
+### Fixed
+
+- **Explore mode guardrails** — Explore mode now explicitly prevents implementation, keeping focus on thinking and discovery.
+
+### Changed
+
+- Improved change inference in `opsx apply` — automatically detects the target change from conversation context.
+
+## 0.20.0
+
+### Added
+
+- **`/opsx:verify` command** — Validate that change implementations match their specifications across three dimensions: completeness, correctness, and coherence.
+
+### Fixed
+
+- Fixed vitest process storms by capping worker parallelism.
+- Fixed agent workflows to use non-interactive mode for validation commands.
+- Fixed PowerShell completions generator to remove trailing commas.

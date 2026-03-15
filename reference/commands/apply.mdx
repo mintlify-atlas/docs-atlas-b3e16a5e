@@ -1,0 +1,71 @@
+---
+title: "/opsx:apply"
+description: "Implement tasks from the change, writing code and checking off items one by one"
+---
+
+`/opsx:apply` works through the task list in `tasks.md`, implementing each item and marking it complete. It tracks progress with checkboxes so it can resume if interrupted.
+
+## Syntax
+
+```text
+/opsx:apply [change-name]
+```
+
+## Profile
+
+<Note>
+  This command is part of the **core** profile, enabled by default on all new installs.
+</Note>
+
+## Arguments
+
+<ParamField path="change-name" type="string">
+  Which change to implement. If omitted, the AI infers it from context or prompts you to specify one.
+</ParamField>
+
+## What it does
+
+- Reads `tasks.md` and identifies incomplete tasks
+- Works through tasks one by one
+- Writes code, creates files, and runs tests as needed
+- Marks tasks complete with checkboxes `[x]` as it goes
+
+## Example
+
+```text
+You: /opsx:apply
+
+AI:  Implementing add-dark-mode...
+
+     Reading tasks.md:
+     - [ ] 1.1 Create ThemeContext
+     - [ ] 1.2 Add CSS custom properties
+     - [ ] 1.3 Implement localStorage persistence
+
+     Working on 1.1: Create ThemeContext...
+     [Creates src/context/ThemeContext.tsx]
+
+     ✓ 1.1 Complete
+
+     Working on 1.2: Add CSS custom properties...
+     [Updates src/styles/globals.css]
+
+     ✓ 1.2 Complete
+     ...
+```
+
+## Tips
+
+<Tip>
+  If implementation is interrupted, run `/opsx:apply` again. It reads the checkboxes in `tasks.md` and picks up from where it left off.
+</Tip>
+
+- Specify the change name explicitly when working on parallel changes: `/opsx:apply add-dark-mode`
+- Completion state is tracked directly in `tasks.md` checkboxes — you can also check or uncheck tasks manually
+- Run `/opsx:verify` after applying to validate the implementation before archiving
+
+## Related commands
+
+- [`/opsx:propose`](/reference/commands/propose) — Create the change and tasks before applying
+- [`/opsx:verify`](/reference/commands/verify) — Validate implementation after applying
+- [`/opsx:archive`](/reference/commands/archive) — Archive the change after implementation is complete

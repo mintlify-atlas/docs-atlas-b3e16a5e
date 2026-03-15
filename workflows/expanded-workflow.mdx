@@ -1,0 +1,311 @@
+---
+title: "Expanded workflow"
+description: "Full control over artifact creation with new, continue, ff, verify, sync"
+---
+
+The expanded profile adds commands that give you explicit control over each artifact in the planning cycle. Instead of generating everything at once, you scaffold a change and then build artifacts one at a time — or all at once when you're ready.
+
+## Enabling the expanded profile
+
+```bash
+openspec config profile
+openspec update
+```
+
+`openspec config profile` presents a selection menu for available workflow command sets. Select the expanded workflow set, then run `openspec update` to regenerate the slash command files for your AI tools.
+
+<Note>
+The `core` commands (`/opsx:propose`, `/opsx:explore`, `/opsx:apply`, `/opsx:archive`) remain available after enabling the expanded profile.
+</Note>
+
+## Expanded commands
+
+| Command | Purpose |
+|---|---|
+| `/opsx:new` | Start a new change scaffold (creates the folder, waits for artifact creation) |
+| `/opsx:continue` | Create the next artifact in the dependency chain, one at a time |
+| `/opsx:ff` | Fast-forward: create all remaining planning artifacts at once |
+| `/opsx:verify` | Validate implementation against your artifacts (completeness, correctness, coherence) |
+| `/opsx:sync` | Merge delta specs into main specs without archiving |
+| `/opsx:bulk-archive` | Archive multiple completed changes at once, with conflict resolution |
+| `/opsx:onboard` | Guided tutorial through the complete workflow using your actual codebase |
+
+## Pattern 1: quick feature
+
+When you know what you want to build and just need to execute:
+
+```text
+/opsx:new ──► /opsx:ff ──► /opsx:apply ──► /opsx:verify ──► /opsx:archive
+```
+
+**Example: adding a logout button**
+
+<Steps>
+  <Step title="Create the change scaffold">
+    ```text
+    You: /opsx:new add-logout-button
+
+    AI:  Created openspec/changes/add-logout-button/
+         Schema: spec-driven
+
+         Ready to create: proposal
+         Use /opsx:continue to create it, or /opsx:ff to create all artifacts.
+    ```
+  </Step>
+  <Step title="Fast-forward through all planning artifacts">
+    ```text
+    You: /opsx:ff
+
+    AI:  Fast-forwarding add-logout-button...
+
+         ✓ Creating proposal.md
+         ✓ Creating specs/auth/spec.md
+         ✓ Creating design.md
+         ✓ Creating tasks.md
+
+         All planning artifacts complete!
+         Ready for implementation. Run /opsx:apply to begin.
+    ```
+  </Step>
+  <Step title="Implement tasks">
+    ```text
+    You: /opsx:apply
+
+    AI:  Implementing add-logout-button...
+         Working through tasks...
+         ✓ Added logout button to header
+         ✓ Implemented session clearing
+         ✓ Added confirmation dialog
+         All tasks complete!
+    ```
+  </Step>
+  <Step title="Verify before archiving">
+    ```text
+    You: /opsx:verify
+
+    AI:  Verifying add-logout-button...
+
+         COMPLETENESS
+         ✓ All 5 tasks in tasks.md are checked
+         ✓ All requirements in specs have corresponding code
+         ✓ Scenarios covered
+
+         CORRECTNESS
+         ✓ Implementation matches spec intent
+         ✓ Edge cases from scenarios are handled
+
+         COHERENCE
+         ✓ Design decisions reflected in code structure
+         ✓ Naming conventions consistent with design.md
+
+         SUMMARY
+         ─────────────────────────────
+         Critical issues: 0
+         Warnings: 0
+         Ready to archive: Yes
+    ```
+  </Step>
+  <Step title="Archive the change">
+    ```text
+    You: /opsx:archive
+
+    AI:  ✓ Synced specs to openspec/specs/auth/spec.md
+         ✓ Moved to openspec/changes/archive/2025-01-24-add-logout-button/
+
+         Change archived successfully.
+    ```
+  </Step>
+</Steps>
+
+## Pattern 2: incremental control
+
+When you want to review and iterate on each artifact before moving to the next:
+
+```text
+/opsx:new ──► /opsx:continue ──► /opsx:continue ──► ... ──► /opsx:apply
+```
+
+**Example: implementing 2FA**
+
+```text
+You: /opsx:new implement-2fa
+
+AI:  Created openspec/changes/implement-2fa/
+     Ready to create: proposal
+
+You: /opsx:continue
+
+AI:  Change: implement-2fa
+
+     Artifact status:
+     ◆ proposal    (ready)
+     ○ specs       (blocked - needs: proposal)
+     ○ design      (blocked - needs: proposal)
+     ○ tasks       (blocked - needs: specs)
+
+     Creating proposal...
+     [Writes proposal.md]
+
+     ✓ Created openspec/changes/implement-2fa/proposal.md
+
+     Now available: specs, design
+     Run /opsx:continue to create the next artifact.
+
+You: /opsx:continue
+
+AI:  Creating specs...
+     [Reads proposal.md, writes delta specs]
+
+     ✓ Created openspec/changes/implement-2fa/specs/auth/spec.md
+
+     Now available: design, tasks
+
+[Review specs, make edits if needed]
+
+You: /opsx:continue
+
+AI:  Creating design...
+     ✓ Created openspec/changes/implement-2fa/design.md
+
+You: /opsx:continue
+
+AI:  Creating tasks...
+     ✓ Created openspec/changes/implement-2fa/tasks.md
+
+     All planning artifacts complete!
+     Ready for implementation.
+```
+
+<Tip>
+After each `/opsx:continue`, you can edit the artifact before running the next one. Changes you make are picked up as context for subsequent artifacts.
+</Tip>
+
+## Pattern 3: explore first
+
+When requirements are unclear, investigate before scaffolding:
+
+```text
+/opsx:explore ──► /opsx:new ──► /opsx:continue
+```
+
+**Example: performance optimization**
+
+```text
+You: /opsx:explore
+
+AI:  What would you like to explore?
+
+You: I want to improve page load performance but I'm not sure
+     where the bottlenecks are.
+
+AI:  Let me investigate...
+     [Analyzes bundle sizes, identifies slow queries, reviews
+     component render patterns]
+
+     I found three main bottlenecks:
+     1. Large unoptimized images
+     2. Synchronous data fetching in ProductList
+     3. Re-renders from context changes
+
+     Which would you like to address first?
+
+You: Let's tackle the data fetching issue.
+
+You: /opsx:new optimize-product-list-fetching
+
+AI:  Created change. Ready to create: proposal
+
+You: /opsx:continue
+
+AI:  Creating proposal based on our exploration...
+     [Writes proposal incorporating investigation insights]
+
+     ✓ Created proposal.md
+     Now available: specs, design
+```
+
+Exploration creates no artifacts — it's free-form investigation that informs the proposal when you're ready to commit.
+
+## `/opsx:ff` vs `/opsx:continue`
+
+| Situation | Use |
+|---|---|
+| Clear requirements, ready to build | `/opsx:ff` |
+| Want to review each artifact before proceeding | `/opsx:continue` |
+| Want to iterate on proposal before specs | `/opsx:continue` |
+| Time pressure, need to move fast | `/opsx:ff` |
+| Complex change, want control | `/opsx:continue` |
+
+**Rule of thumb:** if you can describe the full scope upfront, use `/opsx:ff`. If you're figuring it out as you go, use `/opsx:continue`.
+
+## `/opsx:verify` in detail
+
+`/opsx:verify` validates your implementation against your change artifacts across three dimensions:
+
+| Dimension | What it validates |
+|---|---|
+| **Completeness** | All tasks done, all requirements implemented, scenarios covered |
+| **Correctness** | Implementation matches spec intent, edge cases handled |
+| **Coherence** | Design decisions reflected in code, naming patterns consistent |
+
+**Full verify output example:**
+
+```text
+You: /opsx:verify
+
+AI:  Verifying add-auth...
+
+     COMPLETENESS
+     ✓ All 12 tasks in tasks.md are checked
+     ✓ All requirements in specs have corresponding code
+     ⚠ Scenario "Session timeout after inactivity" not tested
+
+     CORRECTNESS
+     ✓ Implementation matches spec intent
+     ✓ Edge cases from scenarios are handled
+     ✓ Error states match spec definitions
+
+     COHERENCE
+     ✓ Design decisions reflected in code structure
+     ✓ Naming conventions consistent with design.md
+     ⚠ Design mentions "event-driven" but implementation uses polling
+
+     SUMMARY
+     ─────────────────────────────
+     Critical issues: 0
+     Warnings: 2
+     Ready to archive: Yes (with warnings)
+
+     Recommendations:
+     1. Add test for session timeout scenario
+     2. Consider refactoring to event-driven as designed, or update design.md
+```
+
+Verify won't block archive — warnings are surfaced for your review, not enforced. Address them if they matter, then run `/opsx:archive`.
+
+## When to use expanded vs quick path
+
+<AccordionGroup>
+  <Accordion title="Use expanded workflow when...">
+    - You want to review and edit each artifact before the next is created
+    - The change is complex and you need incremental confidence
+    - You want to run `/opsx:verify` before closing out
+    - You're archiving multiple parallel changes with `/opsx:bulk-archive`
+    - You're onboarding a new team member with `/opsx:onboard`
+  </Accordion>
+  <Accordion title="Stick with quick path when...">
+    - Requirements are clear and the scope is well-defined
+    - You want the fastest path to implementation
+    - Small to medium features where one-shot artifact generation works well
+    - You're comfortable iterating in code rather than in specs
+  </Accordion>
+</AccordionGroup>
+
+<CardGroup cols={2}>
+  <Card title="Quick path" icon="bolt" href="/workflows/quick-path">
+    The default `core` profile for most feature work.
+  </Card>
+  <Card title="Parallel changes" icon="code-branch" href="/workflows/parallel-changes">
+    Work on multiple changes simultaneously.
+  </Card>
+</CardGroup>

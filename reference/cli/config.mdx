@@ -1,0 +1,237 @@
+---
+title: "openspec config"
+description: "View and modify global OpenSpec configuration"
+---
+
+Views and modifies the global OpenSpec configuration file. Changes made here apply across all projects; run `openspec update` in each project to apply the new settings.
+
+## Syntax
+
+```bash
+openspec config <subcommand> [options]
+```
+
+## Subcommands
+
+| Subcommand | Description |
+|------------|-------------|
+| `path` | Show config file location |
+| `list` | Show all current settings |
+| `get <key>` | Get a specific value |
+| `set <key> <value>` | Set a value |
+| `unset <key>` | Remove a key (revert to default) |
+| `reset` | Reset all configuration to defaults |
+| `edit` | Open config in `$EDITOR` |
+| `profile [preset]` | Configure workflow profile interactively or via preset |
+
+---
+
+## config path
+
+Prints the path to the global config file.
+
+```bash
+openspec config path
+```
+
+---
+
+## config list
+
+Shows all current settings, annotating which values are explicit vs defaults.
+
+```bash
+openspec config list
+```
+
+---
+
+## config get
+
+Retrieves a specific value by key path. Exits with code `1` if the key is not set.
+
+```bash
+openspec config get <key>
+```
+
+**Example:**
+
+```bash
+openspec config get telemetry.enabled
+```
+
+---
+
+## config set
+
+Sets a configuration value. Types are auto-coerced (booleans, numbers, strings).
+
+```bash
+openspec config set <key> <value> [options]
+```
+
+### Options
+
+<ParamField path="--string" type="boolean">
+  Force the value to be stored as a string, preventing type coercion.
+</ParamField>
+
+**Examples:**
+
+```bash
+# Set a boolean value
+openspec config set telemetry.enabled false
+
+# Set a string value explicitly (prevents coercion to boolean/number)
+openspec config set user.name "My Name" --string
+```
+
+---
+
+## config unset
+
+Removes a custom configuration key, reverting it to its default value.
+
+```bash
+openspec config unset <key>
+```
+
+**Example:**
+
+```bash
+openspec config unset user.name
+```
+
+---
+
+## config reset
+
+Resets all configuration to defaults. Requires `--all` flag to prevent accidental resets.
+
+```bash
+openspec config reset --all [-y]
+```
+
+### Options
+
+<ParamField path="--all" type="boolean" required>
+  Required. Confirms that all configuration should be reset.
+</ParamField>
+
+<ParamField path="-y, --yes" type="boolean">
+  Skip the confirmation prompt.
+</ParamField>
+
+**Example:**
+
+```bash
+openspec config reset --all --yes
+```
+
+---
+
+## config edit
+
+Opens the global config file in `$EDITOR` or `$VISUAL`. After saving, the file is validated automatically.
+
+```bash
+openspec config edit
+```
+
+<Note>
+  This command requires the `EDITOR` or `VISUAL` environment variable to be set. Example: `export EDITOR=vim`.
+</Note>
+
+---
+
+## config profile
+
+Configures the workflow profile. Accepts an optional preset name for non-interactive use, or runs an interactive wizard when no preset is given.
+
+```bash
+openspec config profile [preset]
+```
+
+### Preset shortcuts
+
+| Preset | Description |
+|--------|-------------|
+| `core` | Switch to the core workflow set (preserves current delivery mode) |
+
+**Example:**
+
+```bash
+# Fast preset: switch to core profile
+openspec config profile core
+```
+
+### Interactive wizard
+
+Run `openspec config profile` without a preset to open the interactive wizard. The wizard starts with a summary of current settings:
+
+```
+Current profile settings
+  Delivery: both
+  Workflows: 4 selected (core)
+  Delivery = where workflows are installed (skills, commands, or both)
+  Workflows = which actions are available (propose, explore, apply, etc.)
+```
+
+Then prompts for what to configure:
+
+| Action | Description |
+|--------|-------------|
+| Delivery and workflows | Update install mode and available actions together |
+| Delivery only | Change where workflows are installed |
+| Workflows only | Change which workflow actions are available |
+| Keep current settings (exit) | Leave configuration unchanged and exit |
+
+**Delivery mode choices:**
+
+| Mode | Description |
+|------|-------------|
+| `both` | Install as both skills and slash commands (default) |
+| `skills` | Install as skills only |
+| `commands` | Install as slash commands only |
+
+**Workflow checklist:**
+
+In the workflow selection step, `[x]` means the workflow is currently selected. Use Space to toggle and Enter to confirm.
+
+| Workflow | Description |
+|----------|-------------|
+| `propose` | Create proposal, design, and tasks from a request |
+| `explore` | Investigate a problem before implementation |
+| `new` | Create a new change scaffold quickly |
+| `continue` | Resume work on an existing change |
+| `apply` | Implement tasks from the current change |
+| `ff` | Run a faster implementation workflow |
+| `sync` | Sync change artifacts with specs |
+| `archive` | Finalize and archive a completed change |
+| `bulk-archive` | Archive multiple completed changes together |
+| `verify` | Run verification checks against a change |
+| `onboard` | Guided onboarding flow for OpenSpec |
+
+### Behavior notes
+
+- If you choose **Keep current settings**, no changes are written and no update prompt is shown.
+- If there are no config changes but project files are out of sync with your global profile, OpenSpec shows a warning suggesting `openspec update`.
+- If you are inside a project directory when changes are saved, you will be prompted: `Apply changes to this project now?` — choosing yes runs `openspec update` automatically.
+- Pressing `Ctrl+C` cancels the flow cleanly with exit code `130`.
+
+### Examples
+
+```bash
+# Change delivery mode only
+openspec config profile
+# choose: Delivery only
+# choose delivery: Skills only
+
+# Change workflows only
+openspec config profile
+# choose: Workflows only
+# toggle workflows in the checklist, then confirm
+
+# Non-interactive preset
+openspec config profile core
+```

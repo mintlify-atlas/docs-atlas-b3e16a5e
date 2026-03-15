@@ -1,0 +1,131 @@
+---
+title: "Core Concepts"
+description: "How OpenSpec organizes your spec-driven development workflow"
+---
+
+OpenSpec is built around a small number of ideas that fit together cleanly. This page explains the philosophy and the big picture. The linked pages below go deeper on each concept.
+
+## Philosophy
+
+OpenSpec is built around four principles:
+
+```text
+fluid not rigid       — no phase gates, work on what makes sense
+iterative not waterfall — learn as you build, refine as you go
+easy not complex      — lightweight setup, minimal ceremony
+brownfield-first      — works with existing codebases, not just greenfield
+```
+
+**Fluid not rigid.** Traditional spec systems lock you into phases: first you plan, then you implement, then you're done. OpenSpec is more flexible — you can create artifacts in any order that makes sense for your work.
+
+**Iterative not waterfall.** Requirements change. Understanding deepens. What seemed like a good approach at the start might not hold up after you see the codebase. OpenSpec embraces this reality.
+
+**Easy not complex.** Some spec frameworks require extensive setup, rigid formats, or heavyweight processes. OpenSpec stays out of your way. Initialize in seconds, start working immediately, customize only if you need to.
+
+**Brownfield-first.** Most software work isn't building from scratch — it's modifying existing systems. OpenSpec's delta-based approach makes it easy to specify changes to existing behavior, not just describe new systems.
+
+## The big picture
+
+OpenSpec organizes your work into two main areas:
+
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│                        openspec/                                 │
+│                                                                  │
+│   ┌─────────────────────┐      ┌──────────────────────────────┐ │
+│   │       specs/        │      │         changes/              │ │
+│   │                     │      │                               │ │
+│   │  Source of truth    │◄─────│  Proposed modifications       │ │
+│   │  How your system    │ merge│  Each change = one folder     │ │
+│   │  currently works    │      │  Contains artifacts + deltas  │ │
+│   │                     │      │                               │ │
+│   └─────────────────────┘      └──────────────────────────────┘ │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Specs** are the source of truth — they describe how your system currently behaves.
+
+**Changes** are proposed modifications — they live in separate folders until you're ready to merge them.
+
+This separation is key. You can work on multiple changes in parallel without conflicts. You can review a change before it affects the main specs. And when you archive a change, its deltas merge cleanly into the source of truth.
+
+## How it all fits together
+
+```text
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              OPENSPEC FLOW                                   │
+│                                                                              │
+│   ┌────────────────┐                                                         │
+│   │  1. START      │  /opsx:propose (core) or /opsx:new (expanded)          │
+│   │     CHANGE     │                                                         │
+│   └───────┬────────┘                                                         │
+│           │                                                                  │
+│           ▼                                                                  │
+│   ┌────────────────┐                                                         │
+│   │  2. CREATE     │  /opsx:ff or /opsx:continue (expanded workflow)         │
+│   │     ARTIFACTS  │  Creates proposal → specs → design → tasks              │
+│   │                │  (based on schema dependencies)                         │
+│   └───────┬────────┘                                                         │
+│           │                                                                  │
+│           ▼                                                                  │
+│   ┌────────────────┐                                                         │
+│   │  3. IMPLEMENT  │  /opsx:apply                                            │
+│   │     TASKS      │  Work through tasks, checking them off                  │
+│   │                │◄──── Update artifacts as you learn                      │
+│   └───────┬────────┘                                                         │
+│           │                                                                  │
+│           ▼                                                                  │
+│   ┌────────────────┐                                                         │
+│   │  4. VERIFY     │  /opsx:verify (optional)                                │
+│   │     WORK       │  Check implementation matches specs                     │
+│   └───────┬────────┘                                                         │
+│           │                                                                  │
+│           ▼                                                                  │
+│   ┌────────────────┐     ┌──────────────────────────────────────────────┐   │
+│   │  5. ARCHIVE    │────►│  Delta specs merge into main specs           │   │
+│   │     CHANGE     │     │  Change folder moves to archive/             │   │
+│   └────────────────┘     │  Specs are now the updated source of truth   │   │
+│                          └──────────────────────────────────────────────┘   │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+## The virtuous cycle
+
+Everything in OpenSpec is designed to reinforce itself:
+
+<Steps>
+  <Step title="Specs describe current behavior">
+    The `openspec/specs/` directory is the single source of truth for how your system currently works.
+  </Step>
+  <Step title="Changes propose modifications as deltas">
+    Each change lives in its own folder under `openspec/changes/` and contains delta specs describing only what's being added, modified, or removed.
+  </Step>
+  <Step title="Implementation makes the changes real">
+    You work through the tasks in `tasks.md`, guided by the proposal, design, and specs artifacts in the change folder.
+  </Step>
+  <Step title="Archive merges deltas into specs">
+    When the work is done, archiving applies each delta to the main specs. The change moves to `changes/archive/` with its full context preserved.
+  </Step>
+  <Step title="Specs now describe the new behavior">
+    The next change builds on updated specs. The cycle repeats, with each iteration leaving the system better specified than before.
+  </Step>
+</Steps>
+
+## Explore each concept
+
+<CardGroup cols={2}>
+  <Card title="Specs" icon="file-lines" href="/concepts/specs">
+    The source of truth. How specs are structured, what belongs in them, and how to write requirements and scenarios.
+  </Card>
+  <Card title="Changes" icon="folder-open" href="/concepts/changes">
+    Proposed modifications packaged as self-contained folders with artifacts and delta specs.
+  </Card>
+  <Card title="Artifacts" icon="layer-group" href="/concepts/artifacts">
+    The four documents inside every change: proposal, specs, design, and tasks.
+  </Card>
+  <Card title="Schemas" icon="sitemap" href="/concepts/schemas">
+    YAML definitions of artifact types and their dependency graph. Customize for your workflow.
+  </Card>
+</CardGroup>

@@ -1,0 +1,141 @@
+---
+title: "openspec status"
+description: "Display artifact completion status for a change"
+---
+
+Displays the artifact completion status for a change, including which artifacts are done, ready to work on, or blocked by dependencies.
+
+## Syntax
+
+```bash
+openspec status [options]
+```
+
+## Options
+
+<ParamField path="--change" type="string">
+  Change name to show status for. Prompts interactively if omitted.
+</ParamField>
+
+<ParamField path="--schema" type="string">
+  Schema override. Auto-detected from the change's `config.yaml` if not provided.
+</ParamField>
+
+<ParamField path="--json" type="boolean">
+  Output as JSON.
+</ParamField>
+
+## Examples
+
+<Tabs>
+  <Tab title="Human">
+    ```bash
+    # Interactive: prompts for change name
+    openspec status
+
+    # Status for a specific change
+    openspec status --change add-dark-mode
+    ```
+
+    **Output (text):**
+
+    ```
+    Change: add-dark-mode
+    Schema: spec-driven
+    Progress: 2/4 artifacts complete
+
+    [x] proposal
+    [ ] design
+    [x] specs
+    [-] tasks (blocked by: design)
+    ```
+
+    The status indicators are:
+
+    | Indicator | Meaning |
+    |-----------|--------|
+    | `[x]` | Done |
+    | `[ ]` | Ready to work on |
+    | `[-]` | Blocked by a dependency |
+  </Tab>
+  <Tab title="Agent / script">
+    ```bash
+    # JSON output for agent consumption
+    openspec status --change add-dark-mode --json
+    ```
+
+    **Output (JSON):**
+
+    ```json
+    {
+      "changeName": "add-dark-mode",
+      "schemaName": "spec-driven",
+      "isComplete": false,
+      "applyRequires": ["tasks"],
+      "artifacts": [
+        {
+          "id": "proposal",
+          "outputPath": "proposal.md",
+          "status": "done"
+        },
+        {
+          "id": "design",
+          "outputPath": "design.md",
+          "status": "ready"
+        },
+        {
+          "id": "specs",
+          "outputPath": "specs/**/*.md",
+          "status": "done"
+        },
+        {
+          "id": "tasks",
+          "outputPath": "tasks.md",
+          "status": "blocked",
+          "missingDeps": ["design"]
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## JSON output fields
+
+<ResponseField name="changeName" type="string" required>
+  The name of the change.
+</ResponseField>
+
+<ResponseField name="schemaName" type="string" required>
+  The workflow schema being used.
+</ResponseField>
+
+<ResponseField name="isComplete" type="boolean" required>
+  Whether all required artifacts are complete.
+</ResponseField>
+
+<ResponseField name="applyRequires" type="array">
+  Artifact IDs that must be complete before `openspec instructions apply` can proceed.
+</ResponseField>
+
+<ResponseField name="artifacts" type="array" required>
+  Status of each artifact in the schema.
+  <Expandable title="artifact properties">
+    <ResponseField name="id" type="string">
+      Artifact identifier (e.g., `proposal`, `design`, `specs`, `tasks`).
+    </ResponseField>
+    <ResponseField name="outputPath" type="string">
+      Expected file path for the artifact output.
+    </ResponseField>
+    <ResponseField name="status" type="string">
+      One of `done`, `ready`, or `blocked`.
+    </ResponseField>
+    <ResponseField name="missingDeps" type="array">
+      IDs of artifacts that must be completed first (only present when `status` is `blocked`).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<Tip>
+  AI agents can use `openspec status --change <name> --json` to determine which artifact to work on next. Check `artifacts` for the first item with `status: "ready"`.
+</Tip>

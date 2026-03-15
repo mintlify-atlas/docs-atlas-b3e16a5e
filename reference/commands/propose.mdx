@@ -1,0 +1,59 @@
+---
+title: "/opsx:propose"
+description: "Create a new change and generate all planning artifacts in one step"
+---
+
+`/opsx:propose` is the default start command in the `core` profile. It creates a change folder and generates all artifacts needed before implementation — proposal, specs, design, and tasks — in a single step.
+
+## Syntax
+
+```text
+/opsx:propose [change-name-or-description]
+```
+
+## Profile
+
+<Note>
+  This command is part of the **core** profile, enabled by default on all new installs.
+</Note>
+
+## Arguments
+
+<ParamField path="change-name-or-description" type="string">
+  A kebab-case name or plain-language description for the change. If omitted, the AI will prompt you for one.
+</ParamField>
+
+## What it does
+
+- Creates `openspec/changes/<change-name>/`
+- Generates all artifacts needed before implementation: proposal, specs, design, and tasks (for the `spec-driven` schema)
+- Stops when the change is ready for `/opsx:apply`
+
+## Example
+
+```text
+You: /opsx:propose add-dark-mode
+
+AI:  Created openspec/changes/add-dark-mode/
+     ✓ proposal.md
+     ✓ specs/ui/spec.md
+     ✓ design.md
+     ✓ tasks.md
+     Ready for implementation. Run /opsx:apply.
+```
+
+## Tips
+
+<Tip>
+  Use `/opsx:propose` for the fastest end-to-end path. It combines the scaffold and all artifact creation into a single command.
+</Tip>
+
+- If you want step-by-step artifact control, enable expanded workflows and use `/opsx:new` + `/opsx:continue`
+- If requirements are unclear, start with `/opsx:explore` before proposing
+- The change name becomes the folder name — use descriptive kebab-case names like `add-dark-mode` or `fix-login-redirect`
+
+## Related commands
+
+- [`/opsx:explore`](/reference/commands/explore) — Investigate before committing to a change
+- [`/opsx:apply`](/reference/commands/apply) — Implement the tasks created by this command
+- [`/opsx:new`](/reference/commands/new) — Create just the scaffold (expanded workflow)

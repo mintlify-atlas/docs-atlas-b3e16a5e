@@ -1,0 +1,171 @@
+---
+title: "Multi-language support"
+description: "Use OpenSpec across different programming languages and stacks"
+---
+
+OpenSpec generates artifacts in any human language. Because all AI instructions flow through your `openspec/config.yaml` context, you can direct the AI to write in any language with a single config change — no schema modifications required.
+
+## Quick setup
+
+Add a language instruction to the `context` field in `openspec/config.yaml`:
+
+```yaml
+schema: spec-driven
+
+context: |
+  Language: Portuguese (pt-BR)
+  All artifacts must be written in Brazilian Portuguese.
+
+  # Your other project context below...
+  Tech stack: TypeScript, React, Node.js
+```
+
+That's it. All generated artifacts — proposals, specs, design docs, and task lists — will now be written in Portuguese.
+
+## Language examples
+
+<Tabs>
+  <Tab title="Portuguese (Brazil)">
+    ```yaml
+    context: |
+      Language: Portuguese (pt-BR)
+      All artifacts must be written in Brazilian Portuguese.
+    ```
+  </Tab>
+  <Tab title="Spanish">
+    ```yaml
+    context: |
+      Idioma: Español
+      Todos los artefactos deben escribirse en español.
+    ```
+  </Tab>
+  <Tab title="Chinese (Simplified)">
+    ```yaml
+    context: |
+      语言：中文（简体）
+      所有产出物必须用简体中文撰写。
+    ```
+  </Tab>
+  <Tab title="Japanese">
+    ```yaml
+    context: |
+      言語：日本語
+      すべての成果物は日本語で作成してください。
+    ```
+  </Tab>
+  <Tab title="French">
+    ```yaml
+    context: |
+      Langue : Français
+      Tous les artefacts doivent être rédigés en français.
+    ```
+  </Tab>
+  <Tab title="German">
+    ```yaml
+    context: |
+      Sprache: Deutsch
+      Alle Artefakte müssen auf Deutsch verfasst werden.
+    ```
+  </Tab>
+</Tabs>
+
+## Combining language with project context
+
+Language instructions work alongside all your other context. Place the language directive at the top so it's easy to find:
+
+```yaml
+schema: spec-driven
+
+context: |
+  Language: Portuguese (pt-BR)
+  All artifacts must be written in Brazilian Portuguese.
+
+  Tech stack: TypeScript, React 18, Node.js 20
+  Database: PostgreSQL with Prisma ORM
+  Testing: Jest + React Testing Library
+  API style: RESTful, documented in docs/api.md
+```
+
+## Handling technical terms
+
+You can tell the AI how to handle terminology that's typically left in English:
+
+```yaml
+context: |
+  Language: Japanese
+  Write in Japanese, but:
+  - Keep technical terms like "API", "REST", "GraphQL" in English
+  - Code examples and file paths remain in English
+```
+
+This is useful when your team mixes a non-English spoken language with an English-based technical vocabulary.
+
+<Tip>
+  Be explicit about what stays in English. Telling the AI to keep code examples in English prevents it from translating variable names or command-line output.
+</Tip>
+
+## Verifying your language config
+
+To confirm your language context is being picked up, inspect the prompt OpenSpec will send to the AI:
+
+```bash
+# Print the full instructions for an artifact
+openspec instructions proposal --change my-change
+```
+
+The output includes your language context block. If it's missing, check that your `context` field is correctly indented in `config.yaml`.
+
+## Language-specific schema customization
+
+The language context applies to AI-generated content, but template files (in `openspec/schemas/<name>/templates/`) are also injected into the prompt. If your templates contain English section headers and comments, the AI will generally translate them — but for best results you can localize the templates themselves.
+
+<Steps>
+  <Step title="Fork the built-in schema">
+    ```bash
+    openspec schema fork spec-driven my-localized-schema
+    ```
+  </Step>
+  <Step title="Edit the templates">
+    Update the section headers and HTML comments in `openspec/schemas/my-localized-schema/templates/` to your target language.
+
+    ```markdown
+    <!-- templates/proposal.md (Japanese example) -->
+    ## なぜ
+
+    <!-- このchangeの動機を説明してください。どのような問題を解決しますか？ -->
+
+    ## 変更内容
+
+    <!-- 具体的に何が変わるかを説明してください -->
+
+    ## 影響
+
+    <!-- 影響を受けるコード、API、依存関係、システム -->
+    ```
+  </Step>
+  <Step title="Set the schema as your project default">
+    ```yaml
+    # openspec/config.yaml
+    schema: my-localized-schema
+
+    context: |
+      言語：日本語
+      すべての成果物は日本語で作成してください。
+    ```
+  </Step>
+</Steps>
+
+<Note>
+  Localizing templates is optional. The `context` field alone is usually sufficient — the AI follows language instructions reliably even when the template is in English.
+</Note>
+
+## Related pages
+
+<CardGroup cols={2}>
+  <Card title="Project configuration" icon="sliders" href="/customization/project-config">
+    Full reference for config.yaml fields including context and rules.
+  </Card>
+  <Card title="Custom schemas" icon="diagram-project" href="/customization/custom-schemas">
+    Fork or create schemas to customize templates and artifact instructions.
+  </Card>
+</CardGroup>

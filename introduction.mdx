@@ -1,0 +1,104 @@
+---
+title: "Introduction"
+description: "Spec-driven development for AI coding assistants. Agree on what to build before any code is written."
+---
+
+OpenSpec adds a lightweight spec layer between your ideas and your AI coding assistant. Instead of vague prompts leading to unpredictable results, you and your AI align on requirements, design, and tasks — then implement with confidence.
+
+```text
+→ fluid not rigid
+→ iterative not waterfall
+→ easy not complex
+→ built for brownfield not just greenfield
+→ scalable from personal projects to enterprises
+```
+
+## How it works
+
+<Steps>
+  <Step title="Propose a change">
+    Run `/opsx:propose add-dark-mode` in your AI assistant's chat. OpenSpec creates a change folder with all planning artifacts.
+  </Step>
+  <Step title="Implement tasks">
+    Run `/opsx:apply` to work through the task checklist. The AI writes code guided by the specs and design you agreed on.
+  </Step>
+  <Step title="Archive the change">
+    Run `/opsx:archive` to merge delta specs into your source of truth and preserve the full history.
+  </Step>
+</Steps>
+
+```text
+You: /opsx:propose add-dark-mode
+AI:  Created openspec/changes/add-dark-mode/
+     ✓ proposal.md — why we're doing this, what's changing
+     ✓ specs/       — requirements and scenarios
+     ✓ design.md    — technical approach
+     ✓ tasks.md     — implementation checklist
+     Ready for implementation!
+
+You: /opsx:apply
+AI:  Implementing tasks...
+     ✓ 1.1 Add theme context provider
+     ✓ 1.2 Create toggle component
+     ✓ 2.1 Add CSS variables
+     ✓ 2.2 Wire up localStorage
+     All tasks complete!
+
+You: /opsx:archive
+AI:  Archived to openspec/changes/archive/2025-01-23-add-dark-mode/
+     Specs updated. Ready for the next feature.
+```
+
+## Why OpenSpec?
+
+AI coding assistants are powerful but unpredictable when requirements live only in chat history. OpenSpec solves this with a structured change management layer that keeps humans and AI aligned.
+
+<CardGroup cols={2}>
+  <Card title="Agree before you build" icon="handshake">
+    Human and AI align on specs before code gets written. No more "that's not what I meant."
+  </Card>
+  <Card title="Stay organized" icon="folder-open">
+    Each change gets its own folder with proposal, specs, design, and tasks — all in one place.
+  </Card>
+  <Card title="Work fluidly" icon="arrow-right-arrow-left">
+    Update any artifact anytime. No rigid phase gates. Iterate as you learn.
+  </Card>
+  <Card title="Use your tools" icon="toolbox">
+    Works with 20+ AI assistants including Claude Code, Cursor, Windsurf, Copilot, and more.
+  </Card>
+</CardGroup>
+
+## Works with your existing tools
+
+OpenSpec integrates with the AI coding assistant you already use. When you run `openspec init`, it configures slash commands and skills for your selected tools.
+
+<CardGroup cols={3}>
+  <Card title="Claude Code" icon="terminal" href="/integrations/claude-code">
+    `/opsx:propose`, `/opsx:apply`
+  </Card>
+  <Card title="Cursor" icon="arrow-pointer" href="/integrations/cursor">
+    `/opsx-propose`, `/opsx-apply`
+  </Card>
+  <Card title="Windsurf" icon="wind" href="/integrations/windsurf">
+    `/opsx-propose`, `/opsx-apply`
+  </Card>
+</CardGroup>
+
+[View all 20+ supported tools →](/integrations/supported-tools)
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Getting Started" icon="rocket" href="/getting-started">
+    Learn the core workflow and run your first change
+  </Card>
+  <Card title="Installation" icon="download" href="/installation">
+    Install OpenSpec and initialize your project
+  </Card>
+  <Card title="Core Concepts" icon="book" href="/concepts/overview">
+    Understand specs, changes, artifacts, and schemas
+  </Card>
+  <Card title="Command Reference" icon="code" href="/reference/commands/overview">
+    Full reference for all slash commands
+  </Card>
+</CardGroup>

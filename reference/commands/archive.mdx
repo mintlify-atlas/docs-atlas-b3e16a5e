@@ -1,0 +1,73 @@
+---
+title: "/opsx:archive"
+description: "Archive a completed change, merge delta specs, and move it to the archive folder"
+---
+
+`/opsx:archive` finalizes a change by checking artifact and task completion, offering to sync delta specs, and moving the change folder to `openspec/changes/archive/`. All artifacts are preserved for the audit trail.
+
+## Syntax
+
+```text
+/opsx:archive [change-name]
+```
+
+## Profile
+
+<Note>
+  This command is part of the **core** profile, enabled by default on all new installs.
+</Note>
+
+## Arguments
+
+<ParamField path="change-name" type="string">
+  Which change to archive. If omitted, the AI infers it from context or prompts you to specify one.
+</ParamField>
+
+## What it does
+
+- Checks artifact completion status (proposal, specs, design, tasks)
+- Checks task completion and warns if any tasks are incomplete
+- Offers to sync delta specs if they haven't been merged into main specs yet
+- Moves the change folder to `openspec/changes/archive/YYYY-MM-DD-<name>/`
+- Preserves all artifacts for the audit trail
+
+## Example
+
+```text
+You: /opsx:archive
+
+AI:  Archiving add-dark-mode...
+
+     Artifact status:
+     ✓ proposal.md exists
+     ✓ specs/ exists
+     ✓ design.md exists
+     ✓ tasks.md exists (8/8 tasks complete)
+
+     Delta specs: Not yet synced
+     → Sync now? (recommended)
+
+You: Yes
+
+AI:  ✓ Synced specs to openspec/specs/ui/spec.md
+     ✓ Moved to openspec/changes/archive/2025-01-24-add-dark-mode/
+
+     Change archived successfully.
+```
+
+## Tips
+
+<Tip>
+  Run `/opsx:verify` before archiving to catch any mismatches between your implementation and the specs.
+</Tip>
+
+- Archive won't block on incomplete tasks, but it will warn you — you can archive a partially complete change intentionally
+- Delta specs can be synced during archive or beforehand with `/opsx:sync`
+- Archived changes are preserved in full and can be referenced later for history or rollback context
+- The archive folder name includes the date: `openspec/changes/archive/YYYY-MM-DD-<name>/`
+
+## Related commands
+
+- [`/opsx:verify`](/reference/commands/verify) — Validate implementation before archiving
+- [`/opsx:sync`](/reference/commands/sync) — Merge delta specs separately before archiving
+- [`/opsx:bulk-archive`](/reference/commands/bulk-archive) — Archive multiple changes at once

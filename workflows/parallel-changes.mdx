@@ -1,0 +1,156 @@
+---
+title: "Parallel changes"
+description: "Work on multiple changes simultaneously without conflicts"
+---
+
+OpenSpec's change-per-folder model means you can work on multiple features simultaneously. Each change lives in its own directory with its own artifacts, so changes don't interfere with each other until you're ready to archive them.
+
+## How parallel changes work
+
+Each change gets an isolated folder under `openspec/changes/`:
+
+```text
+openspec/
+└── changes/
+    ├── add-dark-mode/
+    │   ├── proposal.md
+    │   ├── specs/ui/spec.md
+    │   ├── design.md
+    │   └── tasks.md
+    └── fix-login-bug/
+        ├── proposal.md
+        ├── specs/auth/spec.md
+        ├── design.md
+        └── tasks.md
+```
+
+Changes only interact when they're archived — that's when delta specs merge into the shared `openspec/specs/` directory. Until then, you can freely switch between them.
+
+## Example: switching between changes
+
+You're mid-way through `add-dark-mode` when an urgent login bug comes in:
+
+```text
+You: I'm working on add-dark-mode but got pulled into a bug fix
+
+You: /opsx:new fix-login-redirect
+
+AI:  Created openspec/changes/fix-login-redirect/
+
+You: /opsx:ff
+
+AI:  ✓ proposal.md
+     ✓ specs/auth/spec.md
+     ✓ design.md
+     ✓ tasks.md
+     Ready for implementation!
+
+You: /opsx:apply
+
+AI:  Working on fix-login-redirect...
+     [Implements the fix]
+     All tasks complete!
+
+You: /opsx:archive
+
+AI:  ✓ Archived fix-login-redirect
+
+You: Let's get back to dark mode
+
+You: /opsx:apply add-dark-mode
+
+AI:  Resuming add-dark-mode...
+     Picking up at task 2.3: Update Header...
+```
+
+By specifying the change name explicitly (`/opsx:apply add-dark-mode`), you tell OpenSpec exactly which change to work on.
+
+## Specifying change names
+
+When you have multiple active changes, OpenSpec needs to know which one to work on. Pass the change name as an argument:
+
+```text
+/opsx:apply add-dark-mode
+/opsx:apply fix-login-bug
+/opsx:continue add-dark-mode
+/opsx:verify fix-login-bug
+/opsx:archive add-dark-mode
+```
+
+Without a name, OpenSpec infers the active change from context. With multiple active changes, it's best to be explicit.
+
+## Spec conflicts
+
+Conflicts can occur when two changes touch the same spec domain — for example, both `add-dark-mode` and `update-footer` modify `specs/ui/`. This isn't a problem during development, only during archiving.
+
+When you archive changes individually, the second archive may need to reconcile with changes the first introduced. When you use `/opsx:bulk-archive`, conflict resolution is handled automatically.
+
+## Archiving multiple changes with `/opsx:bulk-archive`
+
+When you have several completed changes, archive them all at once:
+
+```text
+You: /opsx:bulk-archive
+
+AI:  Found 3 completed changes:
+     - add-dark-mode (8/8 tasks complete)
+     - fix-login-redirect (3/3 tasks complete)
+     - update-footer (2/2 tasks complete)
+
+     Checking for spec conflicts...
+     ⚠ add-dark-mode and update-footer both touch specs/ui/
+
+     Inspecting codebase to resolve...
+     Both changes are implemented. Will merge in chronological order:
+     1. add-dark-mode (created Jan 20)
+     2. update-footer (created Jan 22)
+
+     Archive all 3 changes?
+
+You: Yes
+
+AI:  ✓ Archived add-dark-mode
+     ✓ Archived fix-login-redirect
+     ✓ Archived update-footer
+     Specs merged: add-dark-mode → update-footer
+```
+
+## How bulk-archive handles spec conflicts
+
+When multiple changes touch the same spec domain, `/opsx:bulk-archive`:
+
+1. **Detects the overlap** — identifies which changes share spec domains
+2. **Inspects the codebase** — checks what's actually implemented in each change
+3. **Orders by creation date** — merges specs chronologically so earlier changes apply first
+4. **Resolves agentic conflicts** — if chronological order isn't enough, the AI inspects the actual code to determine the correct merge
+5. **Prompts before overwriting** — you confirm before any spec content is changed
+
+<Note>
+`/opsx:bulk-archive` is part of the expanded profile. Enable it with `openspec config profile` then `openspec update`.
+</Note>
+
+## Best practices for parallel work
+
+**Keep changes focused.** The smaller and more self-contained each change is, the less likely they are to conflict at archive time. If a change starts growing into multiple unrelated features, split it.
+
+**Use clear names.** When switching between changes frequently, descriptive names make `openspec list` useful and reduce mistakes:
+
+```text
+Good:                          Avoid:
+add-dark-mode                  feature-1
+fix-login-redirect             update
+optimize-product-query         wip-2
+```
+
+**Archive completed changes promptly.** Long-running open changes accumulate spec drift. Archive when a change is done rather than letting it sit.
+
+**Coordinate domain ownership in teams.** When multiple people work in parallel, try to avoid multiple changes touching the same spec domain simultaneously. See [Teams](/workflows/teams) for more.
+
+<CardGroup cols={2}>
+  <Card title="Teams" icon="users" href="/workflows/teams">
+    Coordinate parallel work across a team with version control.
+  </Card>
+  <Card title="Expanded workflow" icon="sliders" href="/workflows/expanded-workflow">
+    Learn more about `bulk-archive` and other expanded commands.
+  </Card>
+</CardGroup>

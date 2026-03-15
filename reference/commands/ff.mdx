@@ -1,0 +1,71 @@
+---
+title: "/opsx:ff"
+description: "Fast-forward through artifact creation, generating all planning artifacts at once"
+---
+
+`/opsx:ff` creates all planning artifacts in dependency order in a single step. It tracks progress via a todo list and stops when all artifacts required before implementation are complete.
+
+## Syntax
+
+```text
+/opsx:ff [change-name]
+```
+
+## Profile
+
+<Warning>
+  This is an **expanded workflow** command. To enable it, run `openspec config profile`, select workflows, then run `openspec update` in your project.
+</Warning>
+
+## Arguments
+
+<ParamField path="change-name" type="string">
+  Which change to fast-forward. If omitted, the AI infers it from context or prompts you to specify one.
+</ParamField>
+
+## What it does
+
+- Creates all artifacts in dependency order
+- Tracks progress via a todo list
+- Stops when all `apply-required` artifacts are complete
+- Reads each dependency before creating the next artifact
+
+## Example
+
+```text
+You: /opsx:ff add-dark-mode
+
+AI:  Fast-forwarding add-dark-mode...
+
+     ✓ Creating proposal.md
+     ✓ Creating specs/ui/spec.md
+     ✓ Creating design.md
+     ✓ Creating tasks.md
+
+     All planning artifacts complete!
+     Ready for implementation. Run /opsx:apply to begin.
+```
+
+## Tips
+
+<Tip>
+  Use `/opsx:ff` when you have a clear picture of what you're building. For complex or exploratory changes where you want to review each artifact, use `/opsx:continue` instead.
+</Tip>
+
+- Faster than `/opsx:continue` for straightforward changes
+- You can still edit artifacts after fast-forward completes — the files are yours to modify
+- Good for small to medium features and bug fixes
+
+| Situation | Use |
+|-----------|-----|
+| Clear requirements, ready to build | `/opsx:ff` |
+| Exploring, want to review each step | `/opsx:continue` |
+| Want to iterate on proposal before specs | `/opsx:continue` |
+| Time pressure, need to move fast | `/opsx:ff` |
+| Complex change, want control | `/opsx:continue` |
+
+## Related commands
+
+- [`/opsx:new`](/reference/commands/new) — Create the scaffold before fast-forwarding
+- [`/opsx:continue`](/reference/commands/continue) — Create artifacts one at a time
+- [`/opsx:apply`](/reference/commands/apply) — Implement tasks after artifacts are ready

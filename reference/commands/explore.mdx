@@ -1,0 +1,74 @@
+---
+title: "/opsx:explore"
+description: "Think through ideas, investigate problems, and clarify requirements before committing to a change"
+---
+
+`/opsx:explore` opens an open-ended conversation with your AI coding assistant. Use it when requirements are unclear, you need to investigate options, or you want to understand the codebase before deciding what to build.
+
+## Syntax
+
+```text
+/opsx:explore [topic]
+```
+
+## Profile
+
+<Note>
+  This command is part of the **core** profile, enabled by default on all new installs.
+</Note>
+
+## Arguments
+
+<ParamField path="topic" type="string">
+  What you want to explore or investigate. If omitted, the AI will ask what you'd like to think through.
+</ParamField>
+
+## What it does
+
+- Opens an exploratory conversation with no required structure
+- Investigates the codebase to answer questions and find context
+- Compares options and approaches side by side
+- Creates visual diagrams to clarify thinking when helpful
+- Can transition to `/opsx:propose` (default) or `/opsx:new` (expanded workflow) when insights crystallize
+
+## Example
+
+```text
+You: /opsx:explore
+
+AI:  What would you like to explore?
+
+You: How should we handle authentication for the mobile app?
+
+AI:  Let me investigate your current auth setup...
+     [Analyzes codebase]
+
+     I see you're using session-based auth for the web app.
+     For mobile, we have three main options:
+
+     1. JWT tokens (stateless, works offline)
+     2. OAuth2 (if you need third-party login)
+     3. Extend current sessions (simpler, but requires connectivity)
+
+     Your API already has CORS configured. Which direction interests you?
+
+You: Let's go with JWT. Can we start a change for that?
+
+AI:  Ready when you are. Run /opsx:propose add-jwt-auth to begin.
+```
+
+## Tips
+
+<Tip>
+  Use `/opsx:explore` any time requirements feel unclear or you're not sure which approach to take. No artifacts are created during exploration, so there's no cost to thinking out loud.
+</Tip>
+
+- No artifacts are created during exploration — the conversation is free-form
+- Good for comparing multiple approaches before deciding
+- The AI can read files and search the codebase during exploration
+- When you're ready to commit, the AI will suggest the right command to start a change
+
+## Related commands
+
+- [`/opsx:propose`](/reference/commands/propose) — Create a change after exploration (core profile)
+- [`/opsx:new`](/reference/commands/new) — Create a change scaffold after exploration (expanded workflow)

@@ -1,0 +1,111 @@
+---
+title: "Windsurf"
+description: "Using OpenSpec with Windsurf (Codeium)"
+---
+
+Windsurf supports OpenSpec through its skills and workflows system. OpenSpec installs skills into `.windsurf/skills/` and workflow files into `.windsurf/workflows/`.
+
+## Installation
+
+Run `openspec init` and select Windsurf when prompted, or pass the flag directly:
+
+```bash
+openspec init --tools windsurf
+```
+
+## What gets created
+
+Running init with the `windsurf` tool creates:
+
+```text
+.windsurf/
+├── skills/
+│   ├── openspec-propose/
+│   │   └── SKILL.md
+│   ├── openspec-explore/
+│   │   └── SKILL.md
+│   ├── openspec-apply-change/
+│   │   └── SKILL.md
+│   └── openspec-archive-change/
+│       └── SKILL.md
+└── workflows/
+    ├── opsx-propose.md
+    ├── opsx-explore.md
+    ├── opsx-apply.md
+    └── opsx-archive.md
+```
+
+<Note>
+Windsurf uses a `workflows/` directory (not `commands/`). Earlier versions of OpenSpec used a `commands/` path — if you see old files there, run `openspec update` to migrate.
+</Note>
+
+## Command syntax
+
+Windsurf uses hyphen-separated command syntax:
+
+| Command | Purpose |
+|---|---|
+| `/opsx-propose` | Create a change and generate planning artifacts in one step |
+| `/opsx-explore` | Think through ideas before committing to a change |
+| `/opsx-apply` | Implement tasks from the change |
+| `/opsx-archive` | Archive a completed change |
+
+### Expanded workflow commands
+
+If you've enabled expanded workflows via `openspec config profile`, additional commands are available:
+
+```text
+/opsx-new           Start a new change scaffold
+/opsx-continue      Create the next artifact in the dependency chain
+/opsx-ff            Fast-forward: create all planning artifacts at once
+/opsx-verify        Validate implementation matches artifacts
+/opsx-sync          Merge delta specs into main specs
+/opsx-bulk-archive  Archive multiple changes at once
+/opsx-onboard       Guided walkthrough of the complete workflow
+```
+
+To enable these, run:
+
+```bash
+openspec config profile
+openspec update
+```
+
+## Skills path
+
+OpenSpec installs skill files at:
+
+```text
+.windsurf/skills/openspec-*/SKILL.md
+```
+
+Windsurf reads these automatically. Each `SKILL.md` contains the instructions for a specific OpenSpec workflow.
+
+## Workflows path
+
+Slash command files are installed at:
+
+```text
+.windsurf/workflows/opsx-<id>.md
+```
+
+For example, `opsx-propose.md`, `opsx-apply.md`. These files register the `/opsx-*` commands in Windsurf's Cascade panel.
+
+## Tips for Windsurf
+
+**Restart Windsurf after init.** Skills and workflows are detected at startup. Run `openspec init`, then restart Windsurf before using any `/opsx-*` commands.
+
+**Use Cascade for multi-step workflows.** OpenSpec's planning workflows involve reading and writing multiple files. Windsurf's Cascade agentic mode handles these sequences better than standard chat.
+
+**Specify the change name when working in parallel.** If you have multiple active changes, be explicit:
+
+```text
+/opsx-apply add-dark-mode
+/opsx-archive fix-login-bug
+```
+
+**Run `openspec update` to stay current.** When you change your profile or upgrade OpenSpec, run `openspec update` and restart Windsurf to pick up the refreshed workflow files.
+
+<Tip>
+If `/opsx-*` commands are not appearing in Windsurf's command palette, check that `.windsurf/workflows/` exists and contains `.md` files. Run `openspec init --tools windsurf` to regenerate.
+</Tip>

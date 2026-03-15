@@ -1,0 +1,113 @@
+---
+title: "Claude Code"
+description: "Using OpenSpec with Claude Code (Anthropic)"
+---
+
+Claude Code is the primary integration target for OpenSpec. OpenSpec was designed and tested with Claude Code first, and the skills system maps directly to how Claude Code discovers and loads instructions.
+
+## Installation
+
+Run `openspec init` and select Claude Code when prompted, or pass the flag directly:
+
+```bash
+openspec init --tools claude
+```
+
+## What gets created
+
+Running init with the `claude` tool creates:
+
+```text
+.claude/
+├── skills/
+│   ├── openspec-propose/
+│   │   └── SKILL.md
+│   ├── openspec-explore/
+│   │   └── SKILL.md
+│   ├── openspec-apply-change/
+│   │   └── SKILL.md
+│   └── openspec-archive-change/
+│       └── SKILL.md
+└── commands/
+    └── opsx/
+        ├── propose.md
+        ├── explore.md
+        ├── apply.md
+        └── archive.md
+```
+
+The skills directory contains YAML-fronted markdown files that Claude Code auto-detects at startup. The commands directory wires up the `/opsx:*` slash commands in Claude Code's chat interface.
+
+## Command syntax
+
+Claude Code uses colon-separated command syntax:
+
+| Command | Purpose |
+|---|---|
+| `/opsx:propose` | Create a change and generate planning artifacts in one step |
+| `/opsx:explore` | Think through ideas before committing to a change |
+| `/opsx:apply` | Implement tasks from the change |
+| `/opsx:archive` | Archive a completed change |
+
+<Note>
+Claude Code uses colons as separators (`/opsx:propose`), unlike most other tools that use hyphens (`/opsx-propose`). This is specific to Claude Code's command format.
+</Note>
+
+### Expanded workflow commands
+
+If you've enabled expanded workflows via `openspec config profile`, additional commands are available:
+
+```text
+/opsx:new           Start a new change scaffold
+/opsx:continue      Create the next artifact in the dependency chain
+/opsx:ff            Fast-forward: create all planning artifacts at once
+/opsx:verify        Validate implementation matches artifacts
+/opsx:sync          Merge delta specs into main specs
+/opsx:bulk-archive  Archive multiple changes at once
+/opsx:onboard       Guided walkthrough of the complete workflow
+```
+
+To enable these, run:
+
+```bash
+openspec config profile
+openspec update
+```
+
+## How the skills directory works
+
+Claude Code scans for `SKILL.md` files in `.claude/skills/` at startup. Each skill subdirectory (e.g., `openspec-propose/SKILL.md`) contains:
+
+- YAML frontmatter with skill metadata
+- Instructions that tell Claude Code what to do when the skill is invoked
+- References to OpenSpec CLI commands for querying project state
+
+When you run `/opsx:propose`, Claude Code loads the corresponding skill and executes the workflow instructions using your project's current context.
+
+<Tip>
+Restart Claude Code after running `openspec init` or `openspec update` to pick up new or updated skills.
+</Tip>
+
+## Recommended models
+
+OpenSpec's planning workflows (propose, continue, ff) involve multi-step reasoning over your codebase and artifact dependencies. High-reasoning models produce the best results:
+
+- **Claude Sonnet** — Good balance of speed and quality for most workflows
+- **Claude Opus** — Best for complex proposals and spec generation on large codebases
+
+For `apply` and `archive`, any capable model works well since those commands are more execution-focused.
+
+## Context hygiene tips
+
+**Start a new conversation for each major workflow action.** The planning artifacts (proposal, specs, design, tasks) are written to disk, so you don't need to carry them in context. Starting fresh keeps Claude Code focused.
+
+**Use `/opsx:explore` before `/opsx:propose` on complex changes.** Exploration conversations help clarify requirements without cluttering your planning context with dead ends.
+
+**Specify the change name when working in parallel.** If you have multiple active changes, pass the name explicitly:
+
+```text
+/opsx:apply add-dark-mode
+/opsx:archive fix-login-bug
+```
+
+**Keep `openspec/config.yaml` concise.** Context from `config.yaml` is injected into every planning request. Bloated context reduces artifact quality. Focus on tech stack, key constraints, and conventions that AI frequently ignores.

@@ -1,0 +1,160 @@
+---
+title: "Troubleshooting"
+description: "Solutions to common issues with OpenSpec"
+---
+
+## Common errors
+
+<AccordionGroup>
+  <Accordion title='"Change not found" error'>
+    The command couldn't identify which change to work on.
+
+    **Solutions:**
+
+    - Specify the change name explicitly:
+      ```text
+      /opsx:apply add-dark-mode
+      ```
+    - List active changes to check what exists:
+      ```bash
+      openspec list
+      ```
+    - Verify you're in the correct project directory. OpenSpec looks for `openspec/changes/` relative to your working directory.
+  </Accordion>
+
+  <Accordion title='"No artifacts ready" error'>
+    All artifacts are either complete or blocked by missing dependencies.
+
+    **Solutions:**
+
+    - Check what's blocking the change:
+      ```bash
+      openspec status --change <name>
+      ```
+    - Look for missing dependency artifacts. For example, `tasks` requires both `specs` and `design` to exist first.
+    - Create the blocking artifact first using `/opsx:continue` or by creating it manually.
+  </Accordion>
+
+  <Accordion title='"Schema not found" error'>
+    The specified schema doesn't exist or the name is misspelled.
+
+    **Solutions:**
+
+    - List available schemas:
+      ```bash
+      openspec schemas
+      ```
+    - Check the spelling of the schema name in your `openspec/config.yaml` or in the `--schema` flag.
+    - If you need a custom schema, create one:
+      ```bash
+      openspec schema init my-workflow
+      # or fork an existing one:
+      openspec schema fork spec-driven my-workflow
+      ```
+  </Accordion>
+
+  <Accordion title="Commands not recognized by the AI tool">
+    The AI tool doesn't recognize OpenSpec commands, or `/opsx-*` commands don't appear in the command palette.
+
+    **Solutions:**
+
+    1. Ensure OpenSpec is initialized in the project:
+       ```bash
+       openspec init
+       ```
+    2. Regenerate skills and command files:
+       ```bash
+       openspec update
+       ```
+    3. Check that the skills directory exists for your tool. For Claude Code:
+       ```bash
+       ls .claude/skills/
+       ```
+    4. **Restart your AI tool.** Skills are detected at startup. This is the most common fix.
+  </Accordion>
+
+  <Accordion title="Artifacts not generating properly">
+    The AI produces incomplete, incorrect, or poorly structured artifacts.
+
+    **Solutions:**
+
+    - Add project context to `openspec/config.yaml`. Context is injected into every planning request:
+      ```yaml
+      context: |
+        Tech stack: TypeScript, React, Node.js
+        Testing: Vitest, Playwright
+        API: RESTful JSON
+      ```
+    - Add per-artifact rules for specific guidance:
+      ```yaml
+      rules:
+        proposal:
+          - Include a rollback plan for risky changes
+        specs:
+          - Use Given/When/Then format for scenarios
+      ```
+    - Use `/opsx:continue` instead of `/opsx:ff` to review each artifact individually before proceeding.
+    - Provide more detail in your change description when running `/opsx:propose`.
+  </Accordion>
+</AccordionGroup>
+
+## Environment issues
+
+<AccordionGroup>
+  <Accordion title="Node.js version errors">
+    OpenSpec requires Node.js 18 or later.
+
+    Check your version:
+    ```bash
+    node --version
+    ```
+
+    If you're on an older version, upgrade Node.js using your version manager (`nvm`, `fnm`, `volta`, etc.).
+  </Accordion>
+
+  <Accordion title="openspec command not found">
+    The `openspec` CLI is not on your PATH.
+
+    **Solutions:**
+
+    - Install or reinstall globally:
+      ```bash
+      npm install -g @fission-ai/openspec
+      ```
+    - Verify it's installed:
+      ```bash
+      openspec --version
+      ```
+    - If using a version manager like `nvm`, make sure you're using the correct Node version where OpenSpec was installed.
+  </Accordion>
+
+  <Accordion title="Legacy files detected in non-interactive mode">
+    You're running `openspec init` in a CI or non-interactive environment and legacy files were found.
+
+    Use the `--force` flag to auto-accept cleanup:
+    ```bash
+    openspec init --force --tools claude
+    ```
+  </Accordion>
+
+  <Accordion title="Config not being applied">
+    Your `openspec/config.yaml` settings aren't affecting artifact generation.
+
+    **Solutions:**
+
+    1. Verify the file is at `openspec/config.yaml` — not `.yml`, and not at the project root.
+    2. Validate your YAML syntax (a malformed file is silently skipped).
+    3. Config changes take effect immediately — no restart needed.
+    4. Check for unknown artifact IDs in `rules:`. Run this to see valid IDs:
+       ```bash
+       openspec schemas --json
+       ```
+  </Accordion>
+</AccordionGroup>
+
+## Getting help
+
+If you're stuck, the fastest way to get help is:
+
+- **Discord**: [discord.gg/YctCnvvshC](https://discord.gg/YctCnvvshC) — real-time help from the community and team
+- **GitHub Issues**: [github.com/Fission-AI/OpenSpec/issues](https://github.com/Fission-AI/OpenSpec/issues) — bug reports and feature requests

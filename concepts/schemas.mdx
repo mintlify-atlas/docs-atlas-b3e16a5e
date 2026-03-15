@@ -1,0 +1,196 @@
+---
+title: "Schemas"
+description: "Schemas define the artifact types and dependency graph for a workflow"
+---
+
+A schema is a YAML file that defines the artifact types available in a workflow, their templates, their AI instructions, and the dependency relationships between them.
+
+## What schemas define
+
+Each artifact in a schema has:
+- An **id** used to reference it
+- A **generates** glob pattern for the file it produces
+- A **template** for the initial file content
+- An **instruction** that tells the AI what to create
+- A **requires** list of artifact ids that must exist first
+
+```yaml
+# openspec/schemas/spec-driven/schema.yaml
+name: spec-driven
+version: 1
+description: Default OpenSpec workflow - proposal → specs → design → tasks
+artifacts:
+  - id: proposal
+    generates: proposal.md
+    requires: []              # No dependencies, can create first
+
+  - id: specs
+    generates: "specs/**/*.md"
+    requires: [proposal]      # Needs proposal before creating
+
+  - id: design
+    generates: design.md
+    requires: [proposal]      # Can create in parallel with specs
+
+  - id: tasks
+    generates: tasks.md
+    requires: [specs, design] # Needs both specs and design first
+```
+
+## The dependency graph
+
+Artifacts form a directed dependency graph. The default `spec-driven` schema looks like this:
+
+```text
+                    proposal
+                   (root node)
+                       │
+         ┌─────────────┴─────────────┐
+         │                           │
+         ▼                           ▼
+      specs                       design
+   (requires:                  (requires:
+    proposal)                   proposal)
+         │                           │
+         └─────────────┬─────────────┘
+                       │
+                       ▼
+                    tasks
+                (requires:
+                specs, design)
+```
+
+**Dependencies are enablers, not gates.** They show what's possible to create, not what you must create next. You can skip design if you don't need it. You can create specs before or after design — both depend only on proposal.
+
+<Tip>
+  The dependency graph expresses what information is needed, not a mandatory sequence. Skip artifacts that don't add value for the work at hand.
+</Tip>
+
+## Built-in schemas
+
+### spec-driven (default)
+
+The standard workflow for spec-driven development:
+
+```text
+proposal → specs → design → tasks → implement
+```
+
+Best for most feature work where you want to agree on specs before implementation. The `apply` phase reads `tasks.md` and works through the checklist.
+
+Full schema reference:
+
+```yaml
+name: spec-driven
+version: 1
+description: Default OpenSpec workflow - proposal → specs → design → tasks
+artifacts:
+  - id: proposal
+    generates: proposal.md
+    description: Initial proposal document outlining the change
+    template: proposal.md
+    requires: []
+
+  - id: specs
+    generates: "specs/**/*.md"
+    description: Detailed specifications for the change
+    template: spec.md
+    requires:
+      - proposal
+
+  - id: design
+    generates: design.md
+    description: Technical design document with implementation details
+    template: design.md
+    requires:
+      - proposal
+
+  - id: tasks
+    generates: tasks.md
+    description: Implementation checklist with trackable tasks
+    template: tasks.md
+    requires:
+      - specs
+      - design
+
+apply:
+  requires: [tasks]
+  tracks: tasks.md
+```
+
+## Custom schemas
+
+Create custom schemas when the default workflow doesn't match how your team works.
+
+```bash
+# Create from scratch
+openspec schema init research-first
+
+# Or fork an existing schema
+openspec schema fork spec-driven research-first
+```
+
+### Example: research-first schema
+
+A schema for work where exploration must come before proposals:
+
+```yaml
+# openspec/schemas/research-first/schema.yaml
+name: research-first
+artifacts:
+  - id: research
+    generates: research.md
+    requires: []           # Do research first
+
+  - id: proposal
+    generates: proposal.md
+    requires: [research]   # Proposal informed by research
+
+  - id: tasks
+    generates: tasks.md
+    requires: [proposal]   # Skip specs/design, go straight to tasks
+```
+
+This schema skips the specs and design artifacts entirely — useful for exploratory work, spikes, or teams that operate with lighter-weight processes.
+
+<Note>
+  Custom schemas live in `openspec/schemas/<name>/schema.yaml` within your project. You can also store schemas in your user config to share across projects.
+</Note>
+
+## Schema precedence
+
+OpenSpec looks for schemas in the following order, from highest to lowest priority:
+
+| Priority | Location | Scope |
+|---|---|---|
+| 1 (highest) | `openspec/schemas/` in your project | Project-specific schemas |
+| 2 | User config directory | Shared across your projects |
+| 3 (lowest) | OpenSpec package | Built-in schemas |
+
+A project-level schema with the same name as a built-in schema overrides the built-in. This lets you fork and customize `spec-driven` for your project without affecting other projects.
+
+<AccordionGroup>
+  <Accordion title="When should I create a custom schema?">
+    Create a custom schema when your team's workflow consistently differs from the default. Common reasons:
+
+    - You always do research before writing proposals
+    - You never write design docs for certain change types
+    - You have additional artifact types (e.g., an RFC or ADR document)
+    - You want different AI instructions for your team's conventions
+  </Accordion>
+  <Accordion title="Can I have multiple schemas in one project?">
+    Yes. Each schema is a separate directory under `openspec/schemas/`. When creating a change, you specify which schema to use. You can have a `spec-driven` schema for feature work and a `hotfix` schema for urgent patches, for example.
+  </Accordion>
+  <Accordion title="What happens to templates in a forked schema?">
+    When you fork a schema with `openspec schema fork`, the templates are copied into your project's schema directory. You can edit them freely — changes only affect new artifacts created with that schema.
+  </Accordion>
+</AccordionGroup>
+
+<CardGroup cols={2}>
+  <Card title="Artifacts" icon="layer-group" href="/concepts/artifacts">
+    The document types defined by a schema and how they fit together.
+  </Card>
+  <Card title="Core Concepts" icon="book" href="/concepts/overview">
+    Back to the overview of how everything fits together.
+  </Card>
+</CardGroup>

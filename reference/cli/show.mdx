@@ -1,0 +1,110 @@
+---
+title: "openspec show"
+description: "Display details of a change or spec"
+---
+
+Displays the content of a change or spec. Prompts interactively if no item name is provided.
+
+When a name matches both a change and a spec, use `--type` to disambiguate.
+
+## Syntax
+
+```bash
+openspec show [item-name] [options]
+```
+
+## Arguments
+
+<ParamField path="item-name" type="string">
+  Name of the change or spec to display. If omitted, prompts interactively.
+</ParamField>
+
+## Options
+
+<ParamField path="--type" type="string">
+  Specify item type when the name is ambiguous. Accepts `change` or `spec`.
+</ParamField>
+
+<ParamField path="--json" type="boolean">
+  Output as JSON.
+</ParamField>
+
+<ParamField path="--no-interactive" type="boolean">
+  Disable interactive prompts. Requires `item-name` to be specified.
+</ParamField>
+
+### Change-specific options
+
+<ParamField path="--deltas-only" type="boolean">
+  Show only delta specs. JSON mode only.
+</ParamField>
+
+### Spec-specific options
+
+<ParamField path="--requirements" type="boolean">
+  Show only requirements, excluding scenarios. JSON mode only.
+</ParamField>
+
+<ParamField path="--no-scenarios" type="boolean">
+  Exclude scenario content. JSON mode only.
+</ParamField>
+
+<ParamField path="-r, --requirement" type="string">
+  Show a specific requirement by 1-based index. JSON mode only.
+</ParamField>
+
+## Examples
+
+<Tabs>
+  <Tab title="Human">
+    ```bash
+    # Interactive selection
+    openspec show
+
+    # Show a specific change (renders markdown)
+    openspec show add-dark-mode
+
+    # Show a specific spec
+    openspec show auth --type spec
+
+    # Disambiguate when name matches both
+    openspec show auth --type change
+    ```
+  </Tab>
+  <Tab title="Agent / script">
+    ```bash
+    # JSON output for a change
+    openspec show add-dark-mode --json
+
+    # Show only the delta specs
+    openspec show add-dark-mode --json --deltas-only
+
+    # JSON output for a spec
+    openspec show auth --type spec --json
+
+    # Show specific requirement by index
+    openspec show auth --type spec --json -r 2
+    ```
+
+    **Example JSON output (change):**
+
+    ```json
+    {
+      "id": "add-dark-mode",
+      "title": "UI theme switching support",
+      "deltaCount": 3,
+      "deltas": [
+        {
+          "type": "ADDED",
+          "specId": "ui/theme",
+          "requirements": []
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<Note>
+  Spec-specific flags (`--requirements`, `--no-scenarios`, `-r`) are silently ignored when showing a change, and change-specific flags (`--deltas-only`) are ignored when showing a spec. OpenSpec will log a warning for irrelevant flags.
+</Note>

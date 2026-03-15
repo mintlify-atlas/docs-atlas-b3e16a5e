@@ -1,0 +1,206 @@
+---
+title: "Project configuration"
+description: "Configure OpenSpec for your project with config.yaml"
+---
+
+The `openspec/config.yaml` file is the easiest way to tailor OpenSpec for your team. It lets you set a default schema, inject project context into every AI prompt, and add per-artifact rules — all without touching the schema itself.
+
+## Three levels of customization
+
+| Level | What it does | Best for |
+|-------|--------------|----------|
+| **Project config** | Set defaults, inject context and rules | Most teams |
+| **Custom schemas** | Define your own workflow artifacts | Teams with unique processes |
+| **Global overrides** | Share schemas across all projects | Power users |
+
+This page covers project config. For custom schemas, see [Custom schemas](/customization/custom-schemas).
+
+## Quick setup
+
+<Steps>
+  <Step title="Run openspec init">
+    ```bash
+    openspec init
+    ```
+    This walks you through creating a config interactively and places it at `openspec/config.yaml`.
+  </Step>
+  <Step title="Or create config.yaml manually">
+    Create `openspec/config.yaml` at the root of your project:
+
+    ```yaml
+    # openspec/config.yaml
+    schema: spec-driven
+
+    context: |
+      Tech stack: TypeScript, React, Node.js, PostgreSQL
+      API style: RESTful, documented in docs/api.md
+      Testing: Jest + React Testing Library
+      We value backwards compatibility for all public APIs
+
+    rules:
+      proposal:
+        - Include rollback plan
+        - Identify affected teams
+      specs:
+        - Use Given/When/Then format
+        - Reference existing patterns before inventing new ones
+    ```
+  </Step>
+  <Step title="Verify your config is picked up">
+    ```bash
+    # Without config you'd need --schema on every command
+    openspec new change my-feature --schema spec-driven
+
+    # With config — schema is automatic
+    openspec new change my-feature
+    ```
+  </Step>
+</Steps>
+
+## Config fields
+
+### `schema`
+
+Sets the default schema for all commands. Skips the need to pass `--schema` every time.
+
+```yaml
+schema: spec-driven
+```
+
+When OpenSpec resolves a schema, it checks in this order:
+
+1. CLI flag: `--schema <name>`
+2. Change metadata (`.openspec.yaml` in the change folder)
+3. Project config (`openspec/config.yaml`)
+4. Default (`spec-driven`)
+
+### `context`
+
+Free-form text injected into **every** artifact prompt. Use it to describe your tech stack, conventions, and constraints so the AI generates output that fits your project.
+
+```yaml
+context: |
+  Tech stack: TypeScript, React 18, Node.js 20, PostgreSQL
+  API style: RESTful, documented in docs/api.md
+  Testing: Jest + React Testing Library
+  We value backwards compatibility for all public APIs
+```
+
+When generating an artifact, OpenSpec injects context like this:
+
+```xml
+<context>
+Tech stack: TypeScript, React 18, Node.js 20, PostgreSQL
+...
+</context>
+
+<rules>
+- Include rollback plan
+- Identify affected teams
+</rules>
+
+<template>
+[Schema's built-in template]
+</template>
+```
+
+<Note>
+  Context appears in **all** artifacts. Rules appear only for the matching artifact type.
+</Note>
+
+### `rules`
+
+Per-artifact instructions appended to prompts. Keys match artifact IDs defined in your schema.
+
+```yaml
+rules:
+  proposal:
+    - Include rollback plan
+    - Identify affected teams
+  specs:
+    - Use Given/When/Then format
+    - Reference existing patterns before inventing new ones
+  design:
+    - Document alternatives considered for each decision
+  tasks:
+    - Keep each task completable in a single session
+```
+
+Each rule in the list becomes a bullet in the `<rules>` block injected into that artifact's prompt. Rules for `proposal` only appear when generating a proposal; rules for `specs` only appear when generating specs.
+
+## Full config.yaml example
+
+```yaml
+# openspec/config.yaml
+schema: spec-driven
+
+context: |
+  Tech stack: TypeScript, React 18, Node.js 20, PostgreSQL with Prisma ORM
+  API style: RESTful. API docs live in docs/api.md.
+  Testing: Jest for unit tests, Playwright for e2e
+  Auth: JWT-based, tokens expire after 24 hours
+  We value backwards compatibility for all public APIs.
+  Breaking changes require a migration guide.
+
+rules:
+  proposal:
+    - Include a rollback plan
+    - Identify affected teams
+    - Flag any breaking API changes
+  specs:
+    - Use Given/When/Then format for all scenarios
+    - Reference existing patterns before inventing new ones
+    - Use SHALL/MUST for normative requirements
+  design:
+    - Document alternatives considered for each decision
+    - Include a migration plan if data or API changes are involved
+  tasks:
+    - Keep each task completable in a single coding session
+    - Order tasks so each one builds on completed work
+```
+
+## When to use project config vs custom schemas
+
+<Tabs>
+  <Tab title="Use project config when...">
+    - You want to use a built-in schema (`spec-driven`) as-is
+    - You only need to add context about your tech stack or conventions
+    - You want per-artifact rules without changing artifact structure
+    - You're getting started and want the least amount of setup
+  </Tab>
+  <Tab title="Use a custom schema when...">
+    - You need different artifact types (e.g., a `review` step, no `design` step)
+    - You want to change the dependency graph between artifacts
+    - You want to replace the AI instructions for each artifact
+    - You want to version-control the full workflow definition with your team
+  </Tab>
+</Tabs>
+
+<Tip>
+  Start with project config. Only create a custom schema when the built-in workflow no longer fits your process.
+</Tip>
+
+## Global config with openspec config commands
+
+For settings that apply across all projects on your machine, use the `openspec config` commands:
+
+```bash
+# Set a global default schema
+openspec config set defaultSchema my-workflow
+
+# View current global config
+openspec config list
+```
+
+Global settings are stored in your user config and apply when no project config is found. Project config always takes precedence over global config.
+
+## Related pages
+
+<CardGroup cols={2}>
+  <Card title="Custom schemas" icon="diagram-project" href="/customization/custom-schemas">
+    Define your own workflow artifacts and dependency graphs.
+  </Card>
+  <Card title="Multi-language support" icon="globe" href="/customization/multi-language">
+    Generate artifacts in languages other than English.
+  </Card>
+</CardGroup>

@@ -1,0 +1,106 @@
+---
+title: "CLI Reference"
+description: "Terminal commands for managing your OpenSpec project"
+---
+
+The OpenSpec CLI (`openspec`) provides terminal commands for project setup, validation, status inspection, and lifecycle management. These commands are distinct from the AI slash commands (like `/opsx:propose`) — the CLI runs in your terminal, while slash commands run inside your AI coding assistant's chat interface.
+
+## Command categories
+
+| Category | Commands | Purpose |
+|----------|----------|---------|
+| **Setup** | `init`, `update` | Initialize and update OpenSpec in your project |
+| **Browsing** | `list`, `view`, `show` | Explore changes and specs |
+| **Validation** | `validate` | Check changes and specs for structural issues |
+| **Lifecycle** | `archive` | Finalize completed changes |
+| **Workflow** | `status`, `instructions`, `templates`, `schemas` | Artifact-driven workflow support |
+| **Schemas** | `schema init`, `schema fork`, `schema validate`, `schema which` | Create and manage custom workflows |
+| **Config** | `config` | View and modify settings |
+| **Utility** | `feedback`, `completion` | Feedback and shell integration |
+
+## Human vs agent commands
+
+Most CLI commands are designed for **human use** in a terminal. Some also support **agent/script use** via JSON output.
+
+### Human-only commands
+
+These commands are interactive and designed for terminal use:
+
+| Command | Purpose |
+|---------|---------|
+| `openspec init` | Initialize project (interactive prompts) |
+| `openspec view` | Interactive dashboard |
+| `openspec config edit` | Open config in editor |
+| `openspec feedback` | Submit feedback via GitHub |
+| `openspec completion install` | Install shell completions |
+
+### Agent-compatible commands
+
+These commands support `--json` output for programmatic use by AI agents and scripts:
+
+| Command | Human use | Agent use |
+|---------|-----------|----------|
+| `openspec list` | Browse changes/specs | `--json` for structured data |
+| `openspec show <item>` | Read content | `--json` for parsing |
+| `openspec validate` | Check for issues | `--all --json` for bulk validation |
+| `openspec status` | See artifact progress | `--json` for structured status |
+| `openspec instructions` | Get next steps | `--json` for agent instructions |
+| `openspec templates` | Find template paths | `--json` for path resolution |
+| `openspec schemas` | List available schemas | `--json` for schema discovery |
+
+## Global options
+
+These options work with all commands:
+
+| Option | Description |
+|--------|-------------|
+| `--version`, `-V` | Show version number |
+| `--no-color` | Disable color output |
+| `--help`, `-h` | Display help for command |
+
+## Environment variables
+
+| Variable | Description |
+|----------|-------------|
+| `OPENSPEC_CONCURRENCY` | Default concurrency for bulk validation (default: `6`) |
+| `EDITOR` or `VISUAL` | Editor for `openspec config edit` |
+| `NO_COLOR` | Disable color output when set |
+
+## Exit codes
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success |
+| `1` | Error (validation failure, missing files, etc.) |
+
+## Command pages
+
+<CardGroup cols={2}>
+  <Card title="openspec init" icon="rocket" href="/reference/cli/init">
+    Initialize OpenSpec in your project
+  </Card>
+  <Card title="openspec update" icon="arrows-rotate" href="/reference/cli/update">
+    Update instruction files after upgrading
+  </Card>
+  <Card title="openspec list" icon="list" href="/reference/cli/list">
+    List changes or specs in your project
+  </Card>
+  <Card title="openspec show" icon="eye" href="/reference/cli/show">
+    Display details of a change or spec
+  </Card>
+  <Card title="openspec validate" icon="circle-check" href="/reference/cli/validate">
+    Validate changes and specs for structural issues
+  </Card>
+  <Card title="openspec archive" icon="box-archive" href="/reference/cli/archive">
+    Archive a completed change and merge delta specs
+  </Card>
+  <Card title="openspec status" icon="chart-bar" href="/reference/cli/status">
+    Display artifact completion status for a change
+  </Card>
+  <Card title="openspec schema" icon="diagram-project" href="/reference/cli/schema">
+    Create and manage custom workflow schemas
+  </Card>
+  <Card title="openspec config" icon="gear" href="/reference/cli/config">
+    View and modify global OpenSpec configuration
+  </Card>
+</CardGroup>

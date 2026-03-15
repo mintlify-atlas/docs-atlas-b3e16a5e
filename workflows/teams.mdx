@@ -1,0 +1,156 @@
+---
+title: "Teams"
+description: "Using OpenSpec in a team environment"
+---
+
+OpenSpec is designed to live in your repository. The `openspec/` folder is a first-class part of your project, which means specs, changes, and history travel with your code through version control.
+
+## How OpenSpec works with version control
+
+The entire `openspec/` directory belongs in your repository:
+
+```text
+your-project/
+├── src/
+├── openspec/
+│   ├── specs/          # Committed — source of truth for your team
+│   ├── changes/        # Committed when ready to share
+│   │   ├── add-dark-mode/
+│   │   └── archive/    # Committed — full history
+│   └── config.yaml     # Committed — shared project config
+└── ...
+```
+
+The `openspec/specs/` directory is your team's shared source of truth. Every archived change permanently updates these files. Anyone who pulls the repo has the full, current spec.
+
+## Sharing a change with your team
+
+Commit the change folder when you're ready for others to see it:
+
+```bash
+git add openspec/changes/add-dark-mode/
+git commit -m "feat: add dark mode (spec + planning artifacts)"
+git push
+```
+
+Your teammates can then:
+- Review the spec and design before any code is written
+- Run `/opsx:apply add-dark-mode` to implement from the same artifacts
+- Pick up implementation if you're unavailable
+
+<Tip>
+Committing a change folder before implementation is a lightweight way to get early feedback on scope and approach — before investing time writing code.
+</Tip>
+
+## Code review of specs
+
+Specs are Markdown files, so they work naturally in pull request reviews. Before opening a PR for implementation, consider opening a PR for just the planning artifacts:
+
+1. Create a branch: `git checkout -b spec/add-dark-mode`
+2. Propose the change: `/opsx:propose add-dark-mode` (or `/opsx:new` + `/opsx:ff`)
+3. Commit the artifacts: `git add openspec/changes/add-dark-mode/ && git commit`
+4. Open a PR targeting your main branch
+5. Review `proposal.md` and `specs/` in the PR — is the intent right? Are requirements complete?
+6. Merge the spec PR, then implement on a new branch
+
+This separates _what to build_ from _how to build it_ in your review process.
+
+### Verifying before requesting review
+
+Before asking teammates to review your implementation, run `/opsx:verify` to catch any drift between your artifacts and the code:
+
+```text
+You: /opsx:verify add-dark-mode
+
+AI:  Verifying add-dark-mode...
+
+     COMPLETENESS
+     ✓ All 8 tasks in tasks.md are checked
+     ✓ All requirements in specs have corresponding code
+     ⚠ Scenario "System preference detection" has no test coverage
+
+     CORRECTNESS
+     ✓ Implementation matches spec intent
+
+     COHERENCE
+     ✓ Design decisions reflected in code structure
+
+     SUMMARY
+     ─────────────────────────────
+     Critical issues: 0
+     Warnings: 1
+     Ready to archive: Yes (with warnings)
+```
+
+Address any warnings before requesting review. A clean verify output gives reviewers confidence that the implementation matches the agreed spec.
+
+<Note>
+`/opsx:verify` is part of the expanded profile. Enable it with `openspec config profile` then `openspec update`.
+</Note>
+
+## Parallel work across team members
+
+Each team member works in their own change folder, so there are no file conflicts during development:
+
+```text
+openspec/changes/
+├── alice/add-dark-mode/       # Alice's change
+├── bob/fix-login-bug/         # Bob's change
+└── carol/update-onboarding/   # Carol's change
+```
+
+<Note>
+Change names don't need to include author names — the example above is just for clarity. In practice, use descriptive names like `add-dark-mode` and coordinate via your team's normal channels.
+</Note>
+
+Conflicts only surface at archive time when two changes modify the same spec domain. To minimize this:
+
+- Communicate which spec domains each change will affect
+- Archive completed changes promptly rather than leaving them open
+- Use `/opsx:bulk-archive` when multiple changes need to be archived together — it handles spec conflict resolution automatically
+
+## Syncing specs after a teammate archives
+
+When a teammate archives a change, the `openspec/specs/` directory is updated. After pulling their changes:
+
+```bash
+git pull
+openspec update
+```
+
+`openspec update` regenerates the AI tool command files to reflect the latest project state. Your AI assistant will have up-to-date spec context on the next command.
+
+If you have a long-running active change and a teammate has archived updates to specs you depend on, you may want to sync:
+
+```text
+You: /opsx:sync
+
+AI:  Syncing add-dark-mode delta specs...
+
+     Reading: openspec/changes/add-dark-mode/specs/ui/spec.md
+     Target:  openspec/specs/ui/spec.md
+
+     Changes to apply:
+     ✓ ADDED: Theme Selection requirement (2 scenarios)
+     ✓ ADDED: Accessibility requirement (1 scenario)
+
+     Merging...
+     ✓ openspec/specs/ui/spec.md updated
+
+     Change remains active. Run /opsx:archive when ready to complete.
+```
+
+This merges your delta specs into main without archiving the change, keeping your in-progress work visible to others.
+
+## Contact and support
+
+For teams looking for a dedicated Slack channel or enterprise support, reach out at [teams@openspec.dev](mailto:teams@openspec.dev).
+
+<CardGroup cols={2}>
+  <Card title="Parallel changes" icon="code-branch" href="/workflows/parallel-changes">
+    Working on multiple changes simultaneously without conflicts.
+  </Card>
+  <Card title="Expanded workflow" icon="sliders" href="/workflows/expanded-workflow">
+    Full command control including `verify`, `sync`, and `bulk-archive`.
+  </Card>
+</CardGroup>

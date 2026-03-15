@@ -1,0 +1,103 @@
+---
+title: "AI Commands"
+description: "Slash commands for spec-driven development in your AI coding assistant"
+---
+
+OpenSpec commands are invoked directly in your AI coding assistant's chat interface — not in the terminal. They tell your AI tool to follow a specific OpenSpec workflow, creating artifacts, implementing tasks, and managing changes.
+
+<Note>
+  For terminal commands used to manage and configure OpenSpec from the command line, see the [CLI Reference](/reference/cli/overview).
+</Note>
+
+## Quick reference
+
+### Default Quick Path (`core` profile)
+
+New installs use the `core` profile by default, which provides four essential commands:
+
+| Command | Purpose |
+|---------|---------|
+| `/opsx:propose` | Create a change and generate planning artifacts in one step |
+| `/opsx:explore` | Think through ideas before committing to a change |
+| `/opsx:apply` | Implement tasks from the change |
+| `/opsx:archive` | Archive a completed change |
+
+### Expanded workflow commands
+
+To enable these commands, run `openspec config profile`, select workflows, then run `openspec update` in your project.
+
+| Command | Purpose |
+|---------|---------|
+| `/opsx:new` | Start a new change scaffold |
+| `/opsx:continue` | Create the next artifact based on dependencies |
+| `/opsx:ff` | Fast-forward: create all planning artifacts at once |
+| `/opsx:verify` | Validate implementation matches artifacts |
+| `/opsx:sync` | Merge delta specs into main specs |
+| `/opsx:bulk-archive` | Archive multiple changes at once |
+| `/opsx:onboard` | Guided tutorial through the complete workflow |
+
+## Command syntax by AI tool
+
+Different AI tools surface commands slightly differently. Use the format that matches your tool:
+
+| Tool | Syntax example |
+|------|----------------|
+| Claude Code | `/opsx:propose`, `/opsx:apply` |
+| Cursor | `/opsx-propose`, `/opsx-apply` |
+| Windsurf | `/opsx-propose`, `/opsx-apply` |
+| Copilot (IDE) | `/opsx-propose`, `/opsx-apply` |
+| Trae | Skill-based invocations such as `/openspec-propose`, `/openspec-apply-change` |
+
+<Note>
+  GitHub Copilot commands (`.github/prompts/*.prompt.md`) are only available in IDE extensions (VS Code, JetBrains, Visual Studio). GitHub Copilot CLI does not currently support custom prompt files.
+</Note>
+
+## Legacy commands
+
+These commands use the older "all-at-once" workflow. They still work but OPSX commands are recommended.
+
+| Command | What it does |
+|---------|--------------|
+| `/openspec:proposal` | Create all artifacts at once (proposal, specs, design, tasks) |
+| `/openspec:apply` | Implement the change |
+| `/openspec:archive` | Archive the change |
+
+Legacy changes can be continued with OPSX commands — the artifact structure is compatible.
+
+## All commands
+
+<Columns cols={2}>
+  <Card title="/opsx:propose" icon="circle-play" href="/reference/commands/propose">
+    Create a change and generate all planning artifacts in one step.
+  </Card>
+  <Card title="/opsx:explore" icon="magnifying-glass" href="/reference/commands/explore">
+    Think through ideas and investigate before committing to a change.
+  </Card>
+  <Card title="/opsx:apply" icon="code" href="/reference/commands/apply">
+    Implement tasks from the change, writing code and checking off items.
+  </Card>
+  <Card title="/opsx:archive" icon="box-archive" href="/reference/commands/archive">
+    Archive a completed change and merge delta specs.
+  </Card>
+  <Card title="/opsx:verify" icon="circle-check" href="/reference/commands/verify">
+    Validate implementation against specs across three dimensions.
+  </Card>
+  <Card title="/opsx:sync" icon="arrows-rotate" href="/reference/commands/sync">
+    Merge delta specs into main specs without archiving.
+  </Card>
+  <Card title="/opsx:new" icon="folder-plus" href="/reference/commands/new">
+    Start a new change scaffold and prepare for artifact creation.
+  </Card>
+  <Card title="/opsx:continue" icon="forward" href="/reference/commands/continue">
+    Create the next artifact in the dependency chain.
+  </Card>
+  <Card title="/opsx:ff" icon="forward-fast" href="/reference/commands/ff">
+    Fast-forward through all planning artifact creation at once.
+  </Card>
+  <Card title="/opsx:bulk-archive" icon="boxes-stacked" href="/reference/commands/bulk-archive">
+    Archive multiple completed changes at once.
+  </Card>
+  <Card title="/opsx:onboard" icon="graduation-cap" href="/reference/commands/onboard">
+    Interactive tutorial through the full workflow using your real codebase.
+  </Card>
+</Columns>

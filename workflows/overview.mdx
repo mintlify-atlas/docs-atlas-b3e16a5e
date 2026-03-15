@@ -1,0 +1,74 @@
+---
+title: "Workflows"
+description: "Common patterns for working with OpenSpec"
+---
+
+OpenSpec gives you commands to act on, not phases to get stuck in. Whether you need the fastest path from idea to implementation or fine-grained control over every artifact, there's a workflow that fits.
+
+## Philosophy: actions, not phases
+
+Traditional spec-driven processes force you through rigid stages — planning, then implementation, then done. Real work doesn't fit neatly into those boxes.
+
+```text
+Traditional (phase-locked):
+
+  PLANNING ────────► IMPLEMENTING ────────► DONE
+      │                    │
+      │   "Can't go back"  │
+      └────────────────────┘
+
+OpenSpec (fluid actions):
+
+  proposal ──► specs ──► design ──► tasks ──► implement
+                 ▲          ▲                    │
+                 └──────────┴────────────────────┘
+                         update as you learn
+```
+
+Two principles guide every workflow:
+
+- **Actions, not phases** — commands are things you can do at any time, not stages you're locked into
+- **Dependencies are enablers** — they show what's possible next, not what's required
+
+## Two modes
+
+OpenSpec ships with two workflow profiles:
+
+| | Core profile (default) | Expanded profile |
+|---|---|---|
+| **Commands** | `/opsx:propose`, `/opsx:explore`, `/opsx:apply`, `/opsx:archive` | All core commands plus `/opsx:new`, `/opsx:continue`, `/opsx:ff`, `/opsx:verify`, `/opsx:sync`, `/opsx:bulk-archive`, `/opsx:onboard` |
+| **Artifact creation** | One step (`/opsx:propose` does it all) | Explicit control (scaffold then build) |
+| **Best for** | Most feature work, clear requirements, fast iteration | Complex changes, incremental review, parallel work streams |
+| **Typical flow** | `propose → apply → archive` | `new → ff (or continue) → apply → verify → archive` |
+
+## Switching profiles
+
+New installs default to the `core` profile. To enable expanded workflow commands:
+
+```bash
+openspec config profile
+openspec update
+```
+
+`openspec config profile` lets you select which command sets to activate. `openspec update` regenerates the slash command files for your AI tools.
+
+<Tip>
+You can switch back to `core` at any time with the same commands. Your existing changes and artifacts are unaffected.
+</Tip>
+
+## Explore the workflows
+
+<CardGroup cols={2}>
+  <Card title="Quick path" icon="bolt" href="/workflows/quick-path">
+    The default `core` profile: propose, apply, archive. Fastest path from idea to done.
+  </Card>
+  <Card title="Expanded workflow" icon="sliders" href="/workflows/expanded-workflow">
+    Full control over artifact creation with `new`, `continue`, `ff`, `verify`, and `sync`.
+  </Card>
+  <Card title="Parallel changes" icon="code-branch" href="/workflows/parallel-changes">
+    Work on multiple changes simultaneously without conflicts.
+  </Card>
+  <Card title="Teams" icon="users" href="/workflows/teams">
+    Using OpenSpec across a team with version control and code review.
+  </Card>
+</CardGroup>

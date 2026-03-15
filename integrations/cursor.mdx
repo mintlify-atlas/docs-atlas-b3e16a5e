@@ -1,0 +1,111 @@
+---
+title: "Cursor"
+description: "Using OpenSpec with Cursor"
+---
+
+Cursor supports OpenSpec through its skills and commands system. OpenSpec installs skills into `.cursor/skills/` and slash command files into `.cursor/commands/`.
+
+## Installation
+
+Run `openspec init` and select Cursor when prompted, or pass the flag directly:
+
+```bash
+openspec init --tools cursor
+```
+
+## What gets created
+
+Running init with the `cursor` tool creates:
+
+```text
+.cursor/
+├── skills/
+│   ├── openspec-propose/
+│   │   └── SKILL.md
+│   ├── openspec-explore/
+│   │   └── SKILL.md
+│   ├── openspec-apply-change/
+│   │   └── SKILL.md
+│   └── openspec-archive-change/
+│       └── SKILL.md
+└── commands/
+    ├── opsx-propose.md
+    ├── opsx-explore.md
+    ├── opsx-apply.md
+    └── opsx-archive.md
+```
+
+## Command syntax
+
+Cursor uses hyphen-separated command syntax:
+
+| Command | Purpose |
+|---|---|
+| `/opsx-propose` | Create a change and generate planning artifacts in one step |
+| `/opsx-explore` | Think through ideas before committing to a change |
+| `/opsx-apply` | Implement tasks from the change |
+| `/opsx-archive` | Archive a completed change |
+
+<Note>
+Cursor uses hyphens as separators (`/opsx-propose`), unlike Claude Code which uses colons (`/opsx:propose`).
+</Note>
+
+### Expanded workflow commands
+
+If you've enabled expanded workflows via `openspec config profile`, additional commands are available:
+
+```text
+/opsx-new           Start a new change scaffold
+/opsx-continue      Create the next artifact in the dependency chain
+/opsx-ff            Fast-forward: create all planning artifacts at once
+/opsx-verify        Validate implementation matches artifacts
+/opsx-sync          Merge delta specs into main specs
+/opsx-bulk-archive  Archive multiple changes at once
+/opsx-onboard       Guided walkthrough of the complete workflow
+```
+
+To enable these, run:
+
+```bash
+openspec config profile
+openspec update
+```
+
+## Skills path
+
+OpenSpec installs skill files at:
+
+```text
+.cursor/skills/openspec-*/SKILL.md
+```
+
+Cursor reads these automatically when the project is open. Each `SKILL.md` contains the instructions for a specific OpenSpec workflow.
+
+## Commands path
+
+Slash command files are installed at:
+
+```text
+.cursor/commands/opsx-<id>.md
+```
+
+For example, `opsx-propose.md`, `opsx-apply.md`. These files register the `/opsx-*` commands in Cursor's chat panel.
+
+## Using OpenSpec in Cursor's chat panel
+
+**Open the chat panel** with `Cmd+L` (macOS) or `Ctrl+L` (Windows/Linux), then type any `/opsx-*` command.
+
+**Restart Cursor after init.** Skills are detected at startup. If commands don't appear after running `openspec init`, restart Cursor.
+
+**Use Composer for multi-file changes.** When `/opsx-apply` writes code across many files, Cursor's Composer mode handles the edits better than inline chat.
+
+**Specify the change name explicitly** when working with multiple active changes:
+
+```text
+/opsx-apply add-dark-mode
+/opsx-archive fix-login-bug
+```
+
+<Tip>
+After running `openspec update`, restart Cursor to pick up any new or updated skill files.
+</Tip>

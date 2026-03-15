@@ -1,0 +1,71 @@
+---
+title: "/opsx:continue"
+description: "Create the next artifact in the dependency chain, one at a time for incremental progress"
+---
+
+`/opsx:continue` advances a change by creating the next available artifact. It queries the dependency graph, shows which artifacts are ready or blocked, and creates the first ready one. Use it when you want to review and edit each artifact before moving forward.
+
+## Syntax
+
+```text
+/opsx:continue [change-name]
+```
+
+## Profile
+
+<Warning>
+  This is an **expanded workflow** command. To enable it, run `openspec config profile`, select workflows, then run `openspec update` in your project.
+</Warning>
+
+## Arguments
+
+<ParamField path="change-name" type="string">
+  Which change to continue. If omitted, the AI infers it from context or prompts you to specify one.
+</ParamField>
+
+## What it does
+
+- Queries the artifact dependency graph
+- Shows which artifacts are done, ready to create, or blocked
+- Creates the first ready artifact
+- Reads dependency files for context before creating
+- Shows what becomes available after creation
+
+## Example
+
+```text
+You: /opsx:continue
+
+AI:  Change: add-dark-mode
+
+     Artifact status:
+     ✓ proposal    (done)
+     ◆ specs       (ready)
+     ◆ design      (ready)
+     ○ tasks       (blocked - needs: specs)
+
+     Creating specs...
+
+     [Reads proposal.md, creates specs based on requirements]
+
+     ✓ Created openspec/changes/add-dark-mode/specs/ui/spec.md
+
+     Now available: tasks
+     Run /opsx:continue to create the next artifact.
+```
+
+## Tips
+
+<Tip>
+  Use `/opsx:continue` when you want to review and edit each artifact before the AI uses it as input for the next one. You can edit `proposal.md` before continuing to specs, for example.
+</Tip>
+
+- Multiple artifacts may become ready simultaneously — the AI creates the first one and lets you continue from there
+- Good for complex changes where you need control over each step
+- Use `/opsx:ff` instead if you have a clear picture and want to generate all artifacts at once
+
+## Related commands
+
+- [`/opsx:new`](/reference/commands/new) — Create the scaffold before using continue
+- [`/opsx:ff`](/reference/commands/ff) — Create all artifacts at once
+- [`/opsx:apply`](/reference/commands/apply) — Implement tasks after all artifacts are ready

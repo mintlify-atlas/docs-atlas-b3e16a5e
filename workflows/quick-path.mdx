@@ -1,0 +1,173 @@
+---
+title: "Quick path"
+description: "The default core profile: propose, apply, archive"
+---
+
+The `core` profile is the default workflow for OpenSpec. It gives you four commands that cover the complete cycle from idea to archived change — with no setup required.
+
+## What's included
+
+The `core` profile includes:
+
+| Command | Purpose |
+|---|---|
+| `/opsx:propose` | Create a change and generate all planning artifacts in one step |
+| `/opsx:explore` | Think through ideas and investigate before committing to a change |
+| `/opsx:apply` | Implement tasks from the change |
+| `/opsx:archive` | Archive a completed change and merge delta specs |
+
+## The typical flow
+
+```text
+/opsx:propose ──► /opsx:apply ──► /opsx:archive
+```
+
+`/opsx:propose` does the heavy lifting: it creates the change folder and generates `proposal.md`, `specs/`, `design.md`, and `tasks.md` in one pass. Once you're happy with the artifacts, `/opsx:apply` implements the tasks. `/opsx:archive` merges your delta specs and closes out the change.
+
+## Full example
+
+Here's a complete quick-path conversation for adding dark mode:
+
+<Steps>
+  <Step title="Propose the change">
+    ```text
+    You: /opsx:propose add-dark-mode
+
+    AI:  Created openspec/changes/add-dark-mode/
+         ✓ proposal.md — why we're doing this, what's changing
+         ✓ specs/ui/spec.md — requirements and scenarios
+         ✓ design.md — technical approach
+         ✓ tasks.md — implementation checklist
+         Ready for implementation!
+    ```
+
+    OpenSpec creates a `openspec/changes/add-dark-mode/` folder with all four artifacts generated from your description.
+  </Step>
+  <Step title="Implement tasks">
+    ```text
+    You: /opsx:apply
+
+    AI:  Implementing add-dark-mode...
+
+         Reading tasks.md:
+         - [ ] 1.1 Create ThemeContext with light/dark state
+         - [ ] 1.2 Add CSS custom properties for colors
+         - [ ] 1.3 Implement localStorage persistence
+         - [ ] 2.1 Create ThemeToggle component
+         - [ ] 2.2 Add toggle to settings page
+         - [ ] 2.3 Update Header to include quick toggle
+         - [ ] 3.1 Define dark theme color palette
+         - [ ] 3.2 Update components to use CSS variables
+
+         Working on 1.1: Create ThemeContext...
+         [Creates src/context/ThemeContext.tsx]
+         ✓ 1.1 Complete
+
+         Working on 1.2: Add CSS custom properties...
+         [Updates src/styles/globals.css]
+         ✓ 1.2 Complete
+         ...
+         All tasks complete!
+    ```
+
+    If you get interrupted, `/opsx:apply` resumes from where it left off — it reads the checkboxes in `tasks.md` to find incomplete work.
+  </Step>
+  <Step title="Archive the change">
+    ```text
+    You: /opsx:archive
+
+    AI:  Archiving add-dark-mode...
+
+         Artifact status:
+         ✓ proposal.md exists
+         ✓ specs/ exists
+         ✓ design.md exists
+         ✓ tasks.md exists (8/8 tasks complete)
+
+         Delta specs: Not yet synced
+         → Sync now? (recommended)
+
+    You: Yes
+
+    AI:  ✓ Synced specs to openspec/specs/ui/spec.md
+         ✓ Moved to openspec/changes/archive/2025-01-24-add-dark-mode/
+
+         Change archived successfully.
+    ```
+
+    Delta specs from `openspec/changes/add-dark-mode/specs/` merge into the main `openspec/specs/` directory and the change folder moves to `openspec/changes/archive/`.
+  </Step>
+</Steps>
+
+## When to use the quick path
+
+<AccordionGroup>
+  <Accordion title="Use quick path for most work">
+    The quick path is the right choice when:
+
+    - Requirements are reasonably clear upfront
+    - The change is small to medium in scope
+    - You want to move fast and iterate
+    - You don't need to review each artifact before moving to the next
+
+    Examples: adding a feature, fixing a bug, making a UI change, adding an API endpoint.
+  </Accordion>
+  <Accordion title="Use /opsx:explore when requirements are unclear">
+    Before committing to a change, use `/opsx:explore` to investigate:
+
+    ```text
+    You: /opsx:explore
+
+    AI:  What would you like to explore?
+
+    You: How should we handle rate limiting for our API?
+
+    AI:  Let me investigate your current setup and options...
+         [Researches codebase, considers patterns]
+
+         I see three approaches we could take:
+         1. Middleware-based (simple, per-endpoint)
+         2. Redis-backed (scalable, shared state)
+         3. Token bucket per user (fair, complex)
+
+         Your current stack suggests #1 or #2. What's your scale?
+    ```
+
+    Exploration creates no artifacts — it's free-form investigation. When you're ready, follow up with `/opsx:propose`.
+  </Accordion>
+  <Accordion title="Switch to expanded workflow for more control">
+    Consider enabling the expanded profile when:
+
+    - You want to review and iterate on the proposal before specs are created
+    - The change is complex and you want step-by-step artifact control
+    - You want to validate implementation with `/opsx:verify` before archiving
+    - You're working with multiple parallel changes and need `/opsx:bulk-archive`
+
+    See [Expanded workflow](/workflows/expanded-workflow) for details.
+  </Accordion>
+</AccordionGroup>
+
+## Tips
+
+**Model selection matters.** `/opsx:propose` generates multiple interdependent artifacts in one pass. High-reasoning models (like Claude Sonnet or better) produce more consistent proposals, specs, and tasks. If artifacts feel shallow or misaligned, try a stronger model.
+
+**Keep context clean.** OpenSpec commands read your change artifacts and codebase to do their work. Long chat histories with unrelated context can dilute quality. If you notice drift in artifact quality, start a new chat session and re-run the command.
+
+**Name changes clearly.** A good change name makes `openspec list` readable and helps the AI generate more relevant artifacts.
+
+```text
+Good:                          Avoid:
+add-dark-mode                  feature-1
+fix-login-redirect             update
+optimize-product-query         changes
+implement-2fa                  wip
+```
+
+<CardGroup cols={2}>
+  <Card title="Expanded workflow" icon="sliders" href="/workflows/expanded-workflow">
+    Enable full artifact control with `new`, `continue`, `ff`, and `verify`.
+  </Card>
+  <Card title="Parallel changes" icon="code-branch" href="/workflows/parallel-changes">
+    Work on multiple changes at the same time without conflicts.
+  </Card>
+</CardGroup>

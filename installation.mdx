@@ -1,0 +1,168 @@
+---
+title: "Installation"
+description: "Install OpenSpec globally and initialize your project"
+---
+
+## Requirements
+
+**Node.js 20.19.0 or higher** is required. Check your version:
+
+```bash
+node --version
+```
+
+---
+
+## Install OpenSpec
+
+<CodeGroup>
+
+```bash npm
+npm install -g @fission-ai/openspec@latest
+```
+
+```bash pnpm
+pnpm add -g @fission-ai/openspec@latest
+```
+
+```bash yarn
+yarn global add @fission-ai/openspec@latest
+```
+
+```bash bun
+bun add -g @fission-ai/openspec@latest
+```
+
+```bash nix
+nix profile install github:Fission-AI/OpenSpec
+```
+
+</CodeGroup>
+
+<Note>
+  With Nix, you can also run OpenSpec directly without installing: `nix run github:Fission-AI/OpenSpec -- init`
+</Note>
+
+Verify the installation:
+
+```bash
+openspec --version
+```
+
+---
+
+## Initialize your project
+
+<Steps>
+  <Step title="Navigate to your project">
+    ```bash
+    cd your-project
+    ```
+  </Step>
+
+  <Step title="Run openspec init">
+    ```bash
+    openspec init
+    ```
+
+    This starts an interactive setup that:
+
+    - Creates the `openspec/` folder structure in your project
+    - Asks which AI tools you use
+    - Writes skills and slash commands into each tool's configuration directory
+    - Sets up the default `core` profile (`propose`, `explore`, `apply`, `archive`)
+  </Step>
+
+  <Step title="Start your first change">
+    Once initialized, tell your AI assistant:
+
+    ```text
+    /opsx:propose <what-you-want-to-build>
+    ```
+  </Step>
+</Steps>
+
+---
+
+## Non-interactive setup with `--tools`
+
+For CI/CD pipelines or scripted environments, skip the interactive prompt using the `--tools` flag:
+
+```bash
+# Configure specific tools
+openspec init --tools claude,cursor
+
+# Configure all supported tools
+openspec init --tools all
+
+# Skip tool configuration entirely
+openspec init --tools none
+
+# Override the profile for this init run
+openspec init --profile core
+```
+
+### Supported tool IDs
+
+Pass any of these IDs to `--tools` as a comma-separated list:
+
+```text
+amazon-q, antigravity, auggie, claude, cline, codex, codebuddy, continue,
+costrict, crush, cursor, factory, gemini, github-copilot, iflow, kilocode,
+kiro, opencode, pi, qoder, qwen, roocode, trae, windsurf
+```
+
+<Tip>
+  Not sure which ID to use? Run `openspec init` interactively and select your tools from the list — OpenSpec supports 20+ AI assistants and growing.
+</Tip>
+
+---
+
+## Updating OpenSpec
+
+After upgrading the npm package, regenerate the agent instructions inside each project to ensure the latest slash commands are active:
+
+```bash
+# Upgrade the package
+npm install -g @fission-ai/openspec@latest
+
+# Refresh agent instructions in your project
+openspec update
+```
+
+<Note>
+  Run `openspec update` inside each project after every package upgrade. This regenerates AI guidance files and activates any new commands.
+</Note>
+
+---
+
+## Telemetry
+
+OpenSpec collects anonymous usage stats — only command names and version, never arguments, file paths, content, or PII. Telemetry is automatically disabled in CI.
+
+To opt out:
+
+```bash
+export OPENSPEC_TELEMETRY=0
+# or
+export DO_NOT_TRACK=1
+```
+
+<Warning>
+  Add the opt-out variable to your shell profile (e.g., `~/.zshrc` or `~/.bashrc`) to make it permanent across sessions.
+</Warning>
+
+---
+
+## Next steps
+
+With OpenSpec installed and initialized, head to the getting started guide to run your first change:
+
+<CardGroup cols={2}>
+  <Card title="Getting Started" icon="rocket" href="/getting-started">
+    Walk through your first propose, apply, and archive cycle
+  </Card>
+  <Card title="Supported Tools" icon="wrench" href="/integrations/supported-tools">
+    View all supported AI tools and their configuration paths
+  </Card>
+</CardGroup>

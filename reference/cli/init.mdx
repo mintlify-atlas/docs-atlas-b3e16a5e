@@ -1,0 +1,82 @@
+---
+title: "openspec init"
+description: "Initialize OpenSpec in your project"
+---
+
+Initializes OpenSpec in your project directory. Creates the folder structure and configures AI tool integrations.
+
+Default behavior uses global config defaults: profile `core`, delivery `both`, workflows `propose, explore, apply, archive`.
+
+## Syntax
+
+```bash
+openspec init [path] [options]
+```
+
+## Arguments
+
+<ParamField path="path" type="string">
+  Target directory. Defaults to the current directory. The directory will be created if it does not exist.
+</ParamField>
+
+## Options
+
+<ParamField path="--tools" type="string">
+  Configure AI tools non-interactively. Accepts `all`, `none`, or a comma-separated list of tool IDs.
+</ParamField>
+
+<ParamField path="--force" type="boolean">
+  Auto-cleanup legacy files without prompting.
+</ParamField>
+
+<ParamField path="--profile" type="string">
+  Override the global config profile for this init run. Accepts `core` or `custom`.
+
+  `--profile custom` uses whatever workflows are currently selected in global config (`openspec config profile`).
+</ParamField>
+
+## Supported tool IDs
+
+Pass any of these IDs to `--tools` as a comma-separated list, or use `all` to configure every supported tool:
+
+`amazon-q`, `antigravity`, `auggie`, `claude`, `cline`, `codex`, `codebuddy`, `continue`, `costrict`, `crush`, `cursor`, `factory`, `gemini`, `github-copilot`, `iflow`, `kilocode`, `kiro`, `opencode`, `pi`, `qoder`, `qwen`, `roocode`, `trae`, `windsurf`
+
+## Examples
+
+```bash
+# Interactive initialization
+openspec init
+
+# Initialize in a specific directory
+openspec init ./my-project
+
+# Non-interactive: configure for Claude and Cursor
+openspec init --tools claude,cursor
+
+# Configure for all supported tools
+openspec init --tools all
+
+# Override profile for this run
+openspec init --profile core
+
+# Skip prompts and auto-cleanup legacy files
+openspec init --force
+```
+
+## What it creates
+
+```
+openspec/
+├── specs/              # Your specifications (source of truth)
+├── changes/            # Proposed changes
+└── config.yaml         # Project configuration
+
+.claude/skills/         # Claude Code skills (if claude selected)
+.cursor/skills/         # Cursor skills (if cursor selected)
+.cursor/commands/       # Cursor OPSX commands (if delivery includes commands)
+... (other tool configs)
+```
+
+<Note>
+  After changing your global profile with `openspec config profile`, run `openspec update` in each project to apply the new settings. `openspec init` only applies the profile at init time.
+</Note>

@@ -1,0 +1,69 @@
+---
+title: "/opsx:new"
+description: "Start a new change scaffold, creating the folder and metadata before artifact generation begins"
+---
+
+`/opsx:new` creates the change directory and metadata file, then waits for you to generate artifacts with `/opsx:continue` or `/opsx:ff`. Use it when you want explicit control over the artifact creation process.
+
+## Syntax
+
+```text
+/opsx:new [change-name] [--schema <schema-name>]
+```
+
+## Profile
+
+<Warning>
+  This is an **expanded workflow** command. To enable it, run `openspec config profile`, select workflows, then run `openspec update` in your project.
+</Warning>
+
+## Arguments
+
+<ParamField path="change-name" type="string">
+  Name for the change folder. If omitted, the AI will prompt you. Use descriptive kebab-case names like `add-dark-mode` or `fix-login-redirect`.
+</ParamField>
+
+<ParamField path="--schema" type="string">
+  Workflow schema to use. Defaults to the project config setting or `spec-driven` if not configured.
+</ParamField>
+
+## What it does
+
+- Creates `openspec/changes/<change-name>/` directory
+- Creates `.openspec.yaml` metadata file in the change folder (schema, created date)
+- Shows the first artifact template ready for creation
+- Prompts for change name and schema if not provided
+
+## What it creates
+
+```text
+openspec/changes/<change-name>/
+└── .openspec.yaml    # Change metadata (schema, created date)
+```
+
+## Example
+
+```text
+You: /opsx:new add-dark-mode
+
+AI:  Created openspec/changes/add-dark-mode/
+     Schema: spec-driven
+
+     Ready to create: proposal
+     Use /opsx:continue to create it, or /opsx:ff to create all artifacts.
+```
+
+## Tips
+
+<Tip>
+  Use descriptive names: `add-feature`, `fix-bug`, `refactor-module`. Avoid generic names like `update`, `changes`, or `wip` — they make `openspec list` harder to read.
+</Tip>
+
+- The schema can also be set in your project config (`openspec/config.yaml`) so you don't need the `--schema` flag each time
+- After creating the scaffold, use `/opsx:ff` to generate all artifacts at once or `/opsx:continue` to create them one at a time
+
+## Related commands
+
+- [`/opsx:continue`](/reference/commands/continue) — Create the next artifact after scaffolding
+- [`/opsx:ff`](/reference/commands/ff) — Create all artifacts at once after scaffolding
+- [`/opsx:propose`](/reference/commands/propose) — Core profile alternative that combines scaffold + all artifacts

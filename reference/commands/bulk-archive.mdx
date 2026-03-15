@@ -1,0 +1,76 @@
+---
+title: "/opsx:bulk-archive"
+description: "Archive multiple completed changes at once, with automatic conflict detection and resolution"
+---
+
+`/opsx:bulk-archive` archives multiple completed changes in a single operation. It detects when changes touch the same specs, resolves conflicts by inspecting what's actually implemented in the codebase, and archives in chronological order.
+
+## Syntax
+
+```text
+/opsx:bulk-archive [change-names...]
+```
+
+## Profile
+
+<Warning>
+  This is an **expanded workflow** command. To enable it, run `openspec config profile`, select workflows, then run `openspec update` in your project.
+</Warning>
+
+## Arguments
+
+<ParamField path="change-names" type="string[]">
+  Specific changes to archive. If omitted, the AI lists all completed changes and prompts you to confirm which to archive.
+</ParamField>
+
+## What it does
+
+- Lists all completed changes and validates each one
+- Detects spec conflicts across changes
+- Resolves conflicts by checking what's actually implemented in the codebase
+- Archives all changes in chronological order of creation
+
+## Example
+
+```text
+You: /opsx:bulk-archive
+
+AI:  Found 3 completed changes:
+     - add-dark-mode (8/8 tasks complete)
+     - fix-login-bug (3/3 tasks complete)
+     - update-footer (2/2 tasks complete)
+
+     Checking for spec conflicts...
+     ⚠ add-dark-mode and update-footer both touch specs/ui/
+
+     Inspecting codebase to resolve...
+     Both changes are implemented. Will merge in chronological order:
+     1. add-dark-mode (created Jan 20)
+     2. update-footer (created Jan 22)
+
+     Archive all 3 changes?
+
+You: Yes
+
+AI:  ✓ Archived add-dark-mode
+     ✓ Archived fix-login-bug
+     ✓ Archived update-footer
+     Specs merged: add-dark-mode → update-footer
+```
+
+## Tips
+
+<Tip>
+  Use `/opsx:bulk-archive` after a sprint or parallel work session when multiple changes are all complete. Conflict resolution is agentic — the AI checks the actual codebase to determine the right merge order.
+</Tip>
+
+- Changes are always archived in order of creation date
+- The AI prompts before overwriting any spec content
+- Conflict resolution inspects the codebase rather than guessing — both changes must be implemented for it to proceed
+- For a single change, use [`/opsx:archive`](/reference/commands/archive) instead
+
+## Related commands
+
+- [`/opsx:archive`](/reference/commands/archive) — Archive a single change
+- [`/opsx:verify`](/reference/commands/verify) — Validate implementation before archiving
+- [`/opsx:sync`](/reference/commands/sync) — Merge delta specs without archiving

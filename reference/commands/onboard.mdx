@@ -1,0 +1,81 @@
+---
+title: "/opsx:onboard"
+description: "Guided interactive tutorial through the complete OpenSpec workflow using your actual codebase"
+---
+
+`/opsx:onboard` walks you through a full OpenSpec workflow cycle with live narration. It uses your real codebase — scanning for actual improvement opportunities, creating a real change, implementing real work, and archiving the result. Takes 15–30 minutes to complete.
+
+## Syntax
+
+```text
+/opsx:onboard
+```
+
+## Profile
+
+<Warning>
+  This is an **expanded workflow** command. To enable it, run `openspec config profile`, select workflows, then run `openspec update` in your project.
+</Warning>
+
+## What it does
+
+- Walks through a complete workflow cycle with narration at each step
+- Scans your codebase for real improvement opportunities
+- Creates an actual change with real artifacts
+- Implements actual work (small, safe changes)
+- Archives the completed change
+- Explains each step as it happens
+
+## Phases
+
+1. Welcome and codebase analysis
+2. Finding an improvement opportunity
+3. Creating a change (`/opsx:new`)
+4. Writing the proposal
+5. Creating specs
+6. Writing the design
+7. Creating tasks
+8. Implementing tasks (`/opsx:apply`)
+9. Verifying implementation
+10. Archiving the change
+11. Summary and next steps
+
+## Example
+
+```text
+You: /opsx:onboard
+
+AI:  Welcome to OpenSpec!
+
+     I'll walk you through the complete workflow using your actual codebase.
+     We'll find something small to improve, create a proper change for it,
+     implement it, and archive it.
+
+     Let me scan your codebase for opportunities...
+
+     [Analyzes codebase]
+
+     I found a few things we could work on:
+     1. Add input validation to the contact form
+     2. Improve error messages in the auth flow
+     3. Add loading states to async buttons
+
+     Which interests you? (or suggest something else)
+```
+
+## Tips
+
+<Tip>
+  Best for new users learning the workflow for the first time. Since onboarding uses your real code, the resulting change is something you can keep, iterate on, or discard after the tutorial.
+</Tip>
+
+- Uses real code, not toy examples — the changes produced are meaningful to your project
+- Creates a real change you can keep or discard after learning
+- Takes 15–30 minutes end-to-end
+- Only needs to be run once — after onboarding, use the individual commands directly
+
+## Related commands
+
+- [`/opsx:new`](/reference/commands/new) — Start a change manually after completing onboarding
+- [`/opsx:explore`](/reference/commands/explore) — Investigate ideas without committing to a change
+- [`/opsx:propose`](/reference/commands/propose) — Core profile path to start a change
