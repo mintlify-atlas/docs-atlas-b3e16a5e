@@ -1,0 +1,149 @@
+{
+  "projectType": "cli-tool",
+  "projectName": "OpenSpec",
+  "projectDescription": "A CLI tool and AI coding assistant integration that enables spec-driven development by organizing changes into structured artifacts before any code is written.",
+  "theme": "aspen",
+  "primaryColor": "#7c7c7c",
+  "lightColor": "#050505",
+  "darkColor": "#c8c8c8",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "getting-started",
+              "installation"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/overview",
+              "concepts/specs",
+              "concepts/changes",
+              "concepts/artifacts",
+              "concepts/schemas"
+            ]
+          },
+          {
+            "group": "Workflows",
+            "pages": [
+              "workflows/overview",
+              "workflows/quick-path",
+              "workflows/expanded-workflow",
+              "workflows/parallel-changes",
+              "workflows/teams"
+            ]
+          },
+          {
+            "group": "Customization",
+            "pages": [
+              "customization/project-config",
+              "customization/custom-schemas",
+              "customization/multi-language"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "integrations/supported-tools",
+              "integrations/claude-code",
+              "integrations/cursor",
+              "integrations/windsurf"
+            ]
+          },
+          {
+            "group": "Resources",
+            "pages": [
+              "resources/troubleshooting",
+              "resources/migration",
+              "resources/changelog"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Reference",
+        "groups": [
+          {
+            "group": "AI Commands",
+            "pages": [
+              "reference/commands/overview",
+              "reference/commands/propose",
+              "reference/commands/explore",
+              "reference/commands/apply",
+              "reference/commands/archive",
+              "reference/commands/verify",
+              "reference/commands/sync",
+              "reference/commands/new",
+              "reference/commands/continue",
+              "reference/commands/ff",
+              "reference/commands/bulk-archive",
+              "reference/commands/onboard"
+            ]
+          },
+          {
+            "group": "CLI Reference",
+            "pages": [
+              "reference/cli/overview",
+              "reference/cli/init",
+              "reference/cli/update",
+              "reference/cli/list",
+              "reference/cli/show",
+              "reference/cli/validate",
+              "reference/cli/archive",
+              "reference/cli/status",
+              "reference/cli/schema",
+              "reference/cli/config"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Spec-driven development workflow for AI coding assistants",
+    "Slash commands (/opsx:propose, /opsx:apply, /opsx:archive) for 20+ AI tools",
+    "Artifact-based change management (proposal, specs, design, tasks)",
+    "Delta specs for brownfield development — ADDED/MODIFIED/REMOVED sections",
+    "Custom workflow schemas with artifact dependency graphs",
+    "CLI for validation, status inspection, and project management",
+    "Parallel change support with conflict-free spec merging",
+    "Agent-compatible JSON output for programmatic use"
+  ],
+  "publicApiSurface": [
+    "openspec init",
+    "openspec update",
+    "openspec list",
+    "openspec show",
+    "openspec validate",
+    "openspec archive",
+    "openspec status",
+    "openspec instructions",
+    "openspec templates",
+    "openspec schemas",
+    "openspec schema init",
+    "openspec schema fork",
+    "openspec schema validate",
+    "openspec schema which",
+    "openspec config",
+    "openspec view",
+    "openspec feedback",
+    "openspec completion",
+    "/opsx:propose",
+    "/opsx:explore",
+    "/opsx:apply",
+    "/opsx:archive",
+    "/opsx:verify",
+    "/opsx:sync",
+    "/opsx:new",
+    "/opsx:continue",
+    "/opsx:ff",
+    "/opsx:bulk-archive",
+    "/opsx:onboard"
+  ]
+}
